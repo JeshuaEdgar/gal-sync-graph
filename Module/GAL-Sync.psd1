@@ -51,7 +51,7 @@
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules   = @(@{
             ModuleName    = "ExchangeOnlineManagement"
-            ModuleVersion = "3.0.0"
+            ModuleVersion = "3.1.0"
         })
 
     # Assemblies that must be loaded prior to importing this module
