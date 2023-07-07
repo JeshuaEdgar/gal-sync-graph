@@ -1,4 +1,4 @@
-function Get-AzureADGroupMembers {
+function Get-GALAADGroupMembers {
     param (
         [CmdletBinding()]
 
