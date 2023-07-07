@@ -2,8 +2,8 @@ function Get-GALContacts {
     # By default return only contacts that have a valid email address and a phone number (Mobile or Business)
     param (
         [CmdletBinding()]
-        [switch]$ContactsWithoutPhoneNumber,
-        [switch]$ContactsWithoutEmail
+        [bool]$ContactsWithoutPhoneNumber,
+        [bool]$ContactsWithoutEmail
     )
     try {
         $allContacts = New-GraphRequest -Method Get -Endpoint "/users?`$top=999"
