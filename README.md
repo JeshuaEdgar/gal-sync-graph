@@ -2,7 +2,7 @@
 
 Ever wondered who called you from your organisation on your iPhone/Android device? Microsoft makes it unnecesarily hard to sync Global Address List contacts to your phone. Yes Outlook works great... but it does not sync with your native contacts app, so pretty useless when it comes to resolving the caller ID.
 
-##[Changelog](CHANGELOG.md)
+## [Changelog](CHANGELOG.md)
 
 ## Azure Application Permissions needed
 
