@@ -8,7 +8,7 @@ function Connect-GALSync {
         [string]$Tenant
     )
 
-    $necesaryAppRoles = @("Group.Read.All", "OrgContact.Read.All", "Contacts.ReadWrite", "Application.Read.All")
+    $necesaryAppRoles = @("Group.Read.All", "OrgContact.Read.All", "Contacts.ReadWrite", "Application.Read.All", "User.Read.All")
 
     # Throw error if file is not present
     if (-not (Test-Path $CredentialFile)) {
@@ -45,11 +45,11 @@ function Connect-GALSync {
         $applicationRoles = [System.Text.Encoding]::ASCII.GetString($tokenByteArray) | ConvertFrom-Json | Select-Object -ExpandProperty roles
 
         $comparisson = Compare-Object $necesaryAppRoles $applicationRoles
-        if (-not ($comparisson | Where-Object { $_.SideIndicator -eq "=>" })) {
+        if (-not ($comparisson | Where-Object { $_.SideIndicator -eq "<=" })) {
             Write-Host "Permissions are OK!"
         }
         else {
-            throw "Missing the $(($comparisson | Where-Object {$_.SideIndicator -eq "<="}).InputObject -join ", ") role(s), please update your application and rerun the script"
+            throw "Missing the $(($comparisson | Where-Object {$_.SideIndicator -eq "=>"}).InputObject -join ", ") role(s), please update your application and rerun the script"
         }
         
         # Set token
