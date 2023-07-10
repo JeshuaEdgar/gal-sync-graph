@@ -11,7 +11,6 @@ function Get-GALAADGroupMembers {
         if ($groupList) {
             do {
                 foreach ($group in $groupList) {
-                    Write-Host $group.mailNickname
                     $users = New-GraphRequest -Method Get -Endpoint "/groups/$($group.id)/members"
                     $userList += $users | Where-Object { $_."@odata.type" -eq "#microsoft.graph.user" }
                     $groups = $users | Where-Object { $_."@odata.type" -eq "#microsoft.graph.group" }
