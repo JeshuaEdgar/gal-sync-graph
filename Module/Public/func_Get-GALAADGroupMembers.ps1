@@ -1,7 +1,6 @@
 function Get-GALAADGroupMembers {
     param (
         [CmdletBinding()]
-
         [Parameter(Mandatory)]
         [string]$Name
     )

@@ -20,8 +20,8 @@ if ($LogPath) {
 }
 
 # Get users based on input
-if ($Directory) { ($mailBoxesToSync = Get-GALContacts -ContactsWithoutPhoneNumber $true).mail }
-elseif ($AzureADGroup) { $mailBoxesToSync = Get-GALAADGroupMembers -Name $Target }
+if ($Directory) { $mailBoxesToSync = Get-GALContacts -ContactsWithoutPhoneNumber $true | Select-Object -ExpandProperty mail }
+elseif ($AzureADGroup) { $mailBoxesToSync = Get-GALAADGroupMembers -Name $Target | Select-Object -ExpandProperty mail }
 elseif ($MailboxList -is [array]) { $mailBoxesToSync = $MailboxList }
 else { Write-Error "No valid mailbox input"; Read-Host }
 
@@ -36,6 +36,6 @@ foreach ($mailBox in $mailBoxesToSync) {
         Sync-GALContacts -Mailbox $mailBox -ContactList $GALContacts -ContactFolderName $ContactFolderName
     }
     catch {
-        $_.Exception.Message
+        Write-LogEvent -Level Error -Message "Failed to sync mailbox: $($mailBox)"
     }
 }

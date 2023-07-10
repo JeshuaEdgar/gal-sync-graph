@@ -33,8 +33,8 @@ function New-GraphRequest {
         URI     = $baseUrl + $Endpoint
         Headers = $script:galSyncData.GraphAuthHeader
     }
-    if ($Body -is [array]) {
-        $reqSplat.Body += $Body
+    if ($Body) {
+        $reqSplat.Body += $Body | ConvertTo-Json
     }
 
     try {
