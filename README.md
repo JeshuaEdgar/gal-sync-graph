@@ -4,6 +4,21 @@ Ever wondered who called you from your organisation on your iPhone/Android devic
 
 ## [Changelog](CHANGELOG.md)
 
+## How to use
+
+1. Please [register an app following Microsoft's guide](https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application).
+For authentication client credentials are necesary, all other forms of authentication won't be necesary.
+
+2. Assign permissions to te app, read the list of permissions below and see why they need those permissions. This solution works on the least privelege model, so nothing more than necesarry needs to be applied.
+
+3. Download a copy of this repository, you can do so the easiest by typing ```git clone https://github.com/JeshuaEdgar/gal-sync-graph``` in a commandline if you have git-scm or a git client installed on your machine. If not, you can go to the top, click the green "Code" button and hitting "Download ZIP".
+
+4. Use ```Mew-StoredCredential.ps1``` to store the credentials securely on your system, this will make sure the script runs unattended.
+
+5. Check out [example.bat](example.bat), and tweak the parameters if necessary. Please check all documentation of available parameters.
+
+6. Check commandline output/logs for potential troubleshooting, you can always shoot in a issue on GitHub.
+
 ## Azure Application Permissions needed
 
 - User.Read.All
