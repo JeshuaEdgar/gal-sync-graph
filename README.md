@@ -19,6 +19,8 @@ For authentication client credentials are necesary, all other forms of authentic
 
 6. Check commandline output/logs for potential troubleshooting, you can always shoot in a issue on GitHub.
 
+## TODO: Parameters for sync
+
 ## Azure Application Permissions needed
 
 - User.Read.All
