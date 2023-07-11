@@ -1,6 +1,24 @@
 function New-FolderContact {
     param (
-        
+        [parameter(Mandatory)][object]$ContactFolder,
+        [parameter(Mandatory)][string]$Mailbox,
+        [parameter(Mandatory)][object]$Contact
     )
-    return
+    $contactBody = @{
+        givenName      = $contact.givenName
+        surname        = $contact.surname
+        mobilePhone    = $contact.mobilePhone
+        jobTitle       = $contact.jobTitle
+        emailAddresses = @(@{
+                address = $contact.mail
+                name    = $contact.displayName
+            }
+        )
+    }
+    try {
+        New-GraphRequest -Method Post -Endpoint "/users/$($Mailbox)/contactFolders/$($ContactFolder.id)/contacts" -Body $contactBody
+    }
+    catch {
+        Write-LogEvent -Level Error -Message "Failed to create contact $($Contact.mail) for $Mailbox"
+    }
 }
