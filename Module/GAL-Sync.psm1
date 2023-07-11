@@ -17,7 +17,6 @@ $script:galSyncData = @{
 try {
     foreach ($Scope in 'Private', 'Public') {
         Get-ChildItem (Join-Path -Path $ScriptPath -ChildPath $Scope) -Recurse -Filter "*.ps1" | ForEach-Object {
-            Write-Host "    $(($_.BaseName -Split "_")[1])"
             . $_.FullName
             if ($Scope -eq 'Public') {
                 Export-ModuleMember -Function ($_.BaseName -Split "_")[1] -ErrorAction Stop
