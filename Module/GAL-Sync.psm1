@@ -1,5 +1,6 @@
 #region discover module name
-$ScriptPath = Split-Path $MyInvocation.MyCommand.Path
+$ScriptPath = $PSScriptRoot
+$ModuleName = $MyInvocation.MyCommand.Module.Name
 $ModuleName = $ExecutionContext.SessionState.Module
 Write-Verbose "Loading module $ModuleName..."
 #endregion discover module name
@@ -14,8 +15,9 @@ $script:galSyncData = @{
 
 #load functions
 try {
-    foreach ($Scope in 'Public', 'Private') {
-        Get-ChildItem (Join-Path -Path $ScriptPath -ChildPath $Scope) -Recurse -Filter "func_*.ps1" | ForEach-Object {
+    foreach ($Scope in 'Private', 'Public') {
+        Get-ChildItem (Join-Path -Path $ScriptPath -ChildPath $Scope) -Recurse -Filter "*.ps1" | ForEach-Object {
+            Write-Host "    $(($_.BaseName -Split "_")[1])"
             . $_.FullName
             if ($Scope -eq 'Public') {
                 Export-ModuleMember -Function ($_.BaseName -Split "_")[1] -ErrorAction Stop
@@ -24,6 +26,6 @@ try {
     }
 }
 catch {
-    Write-Error ("{0}: {1}" -f $_.BaseName, $_.Exception.Message)
+    Write-Error $_.Exception.Message
     exit 1
 }

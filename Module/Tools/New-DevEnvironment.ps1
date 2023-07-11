@@ -9,7 +9,7 @@ ForEach ($key in $devSettings.PSObject.Properties.Name) {
     }
 }
 
-Import-Module "$moduleRoot\Gal-Sync.psm1" -Force -Verbose
+Import-Module "$moduleRoot\Gal-Sync.psd1" -Force -Verbose
 .\New-StoredCredential.ps1 -ApplicationID $env:applicationID -ApplicationSecret $env:applicationSecret -Verbose
 Connect-GALSync -CredentialFile .\Credentials\credential.cred -Tenant $env:tenant -Verbose
 Remove-Item .\Credentials\credential.cred -Verbose
