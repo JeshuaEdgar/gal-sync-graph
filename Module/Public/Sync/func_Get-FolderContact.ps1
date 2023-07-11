@@ -1,4 +1,4 @@
-function Get-FolderContacts {
+function Get-FolderContact {
     param (
         [parameter(Mandatory)][object]$ContactFolder,
         [parameter(Mandatory)][string]$Mailbox
