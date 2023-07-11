@@ -49,10 +49,10 @@
     # ProcessorArchitecture = ''
 
     # Modules that must be imported into the global environment prior to importing this module
-    RequiredModules   = @(@{
-            ModuleName    = "ExchangeOnlineManagement"
-            ModuleVersion = "3.1.0"
-        })
+    # RequiredModules   = @(@{
+    #         ModuleName    = "ExchangeOnlineManagement"
+    #         ModuleVersion = "3.1.0"
+    #     })
 
     # Assemblies that must be loaded prior to importing this module
     # RequiredAssemblies = @()
@@ -70,7 +70,19 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @()
+    FunctionsToExport = @(
+        "Connect-GALSync"
+        "Get-ContactFolder"
+        "Get-FolderContact"
+        "Get-GALAADGroupMembers"
+        "Get-GALContacts"
+        "New-ContactFolder"
+        "New-FolderContact"
+        "New-GraphRequest"
+        "Remove-FolderContact"
+        "Sync-GALContacts"
+        "Update-FolderContact"
+    )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     CmdletsToExport   = @()
