@@ -1,34 +1,51 @@
 function Connect-GALSync {
     param (
         [CmdletBinding()]
-        [parameter(Mandatory)]
         [System.IO.FileInfo]$CredentialFile,
-
-        [parameter(Mandatory)]
-        [string]$Tenant
+        [pscredential]$Credential,
+        [parameter(Mandatory)][string]$Tenant
     )
+    # Create a function to decrypt either file or PSCredential object
+    function Decrypt-AppSecret {
+        param (
+            [pscredential]$Credential
+        )
+        # Decrypt ApplicationSecret for getting a token
+        try {
+            $encrypted_data = ConvertFrom-SecureString $credential.Password
+            $password_securestring = ConvertTo-SecureString $encrypted_data
+            return [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($password_securestring))
+        }
+        catch {
+            throw $_.Exception.Message
+        }
+    }
+    # Check the parameters
+    if ((-not $CredentialFile) -and (-not $Credential)) {
+        throw "Please provide credential in the forms of a credential file or PSCredential object"
+    }
+
+    # Throw error if file is not present
+    elseif (($CredentialFile) -and (-not (Test-Path $CredentialFile))) {
+        throw "Credential file does not exist! Please check if it is present or the path is filled in correctly..."
+    }
+
+    elseif ($CredentialFile) {
+        $credentialObject = Import-Clixml -Path $CredentialFile
+        $clientSecret = Decrypt-AppSecret $credentialObject
+    }
+
+    elseif ($Credential) {
+        $credentialObject = $Credential
+        $clientSecret = Decrypt-AppSecret $Credential
+    }
+
 
     $necesaryAppRoles = @("Group.Read.All", "OrgContact.Read.All", "Contacts.ReadWrite", "Application.Read.All", "User.Read.All")
 
-    # Throw error if file is not present
-    if (-not (Test-Path $CredentialFile)) {
-        throw "File does not exist! Please check if file is present or the path is filled in correctly..."
-    }
-
-    # Decrypt ApplicationSecret for getting a token
-    try {
-        $credential = Import-Clixml -Path $CredentialFile
-        $encrypted_data = ConvertFrom-SecureString $credential.Password
-        $password_securestring = ConvertTo-SecureString $encrypted_data
-        $clientSecret = [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($password_securestring))
-    }
-    catch {
-        throw $_.Exception.Message
-    }
-    
     try {
         # Make body
-        $applicationId = $credential.UserName
+        $applicationId = $credentialObject.UserName
         $requestbody = @{
             client_id     = $applicationId
             scope         = "https://graph.microsoft.com/.default"
@@ -63,5 +80,5 @@ function Connect-GALSync {
     catch {
         throw (Format-ErrorCode $_).ErrorMessage
     }
-    Write-Verbose "Connected!"
+    Write-Output "Connected!"
 }
