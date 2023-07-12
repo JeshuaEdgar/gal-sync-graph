@@ -6,6 +6,9 @@ function Format-ErrorCode {
     )
 
     try {
+        if ($ErrorObject -isnot [Microsoft.PowerShell.Commands.InvokeRestMethodCommand]) {
+            return $ErrorObject.Exception.Message
+        }
         $httpError = $ErrorObject.Exception.Response.StatusCode.value__ #http error code (universal)
 
         switch ($PSVersionTable.PSEdition) {
@@ -30,6 +33,6 @@ function Format-ErrorCode {
         return $return_object
     }
     catch {
-        throw $ErrorObject.Exception.Message
+        throw $_.Exception.Message
     }
 }

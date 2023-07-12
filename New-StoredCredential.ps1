@@ -17,7 +17,6 @@ try {
     $credentialObject = New-Object System.Management.Automation.PSCredential ($ApplicationID, $appSecretSecureString)
     $credentialObject | Export-Clixml -Path ($workingDir, $credDir, $credFile -join "\") -Force
     Write-Host "Credentials are stored in successfully!"
-    Start-Sleep 5
 }
 catch {
     $_.Exception.Message

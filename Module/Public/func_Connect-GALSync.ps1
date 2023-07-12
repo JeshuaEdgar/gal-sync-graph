@@ -46,7 +46,7 @@ function Connect-GALSync {
 
         $comparisson = Compare-Object $necesaryAppRoles $applicationRoles
         if (-not ($comparisson | Where-Object { $_.SideIndicator -eq "<=" })) {
-            Write-Host "Permissions are OK!"
+            Write-Verbose "Permissions are OK!"
         }
         else {
             throw "Missing the $(($comparisson | Where-Object {$_.SideIndicator -eq "=>"}).InputObject -join ", ") role(s), please update your application and rerun the script"
