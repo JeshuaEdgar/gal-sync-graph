@@ -25,6 +25,6 @@ function Get-GALAADGroupMembers {
         }
     }
     catch {
-        throw $(Format-ErrorCodes $_).ErrorMessage
+        throw $(Format-ErrorCode $_).ErrorMessage
     }
 }

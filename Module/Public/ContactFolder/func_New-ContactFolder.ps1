@@ -13,6 +13,6 @@ function New-ContactFolder {
         return New-GraphRequest -Method Post -Endpoint "/users/$($Mailbox)/contactFolders" -Body $contactFolderBody
     }
     catch {
-        throw (Format-ErrorCodes $_).ErrorMessage
+        throw (Format-ErrorCode $_).ErrorMessage
     }
 }

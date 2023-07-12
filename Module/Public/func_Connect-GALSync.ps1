@@ -61,6 +61,6 @@ function Connect-GALSync {
         $script:galSyncData.TokenExpiration = (Get-Date).AddSeconds($tokenRequest.expires_in)
     }
     catch {
-        throw (Format-ErrorCodes $_).ErrorMessage
+        throw (Format-ErrorCode $_).ErrorMessage
     }
 }

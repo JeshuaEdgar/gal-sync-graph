@@ -1,4 +1,4 @@
-function Format-ErrorCodes {
+function Format-ErrorCode {
     [CmdletBinding()]
     param (
         [parameter(Mandatory = $true)]
