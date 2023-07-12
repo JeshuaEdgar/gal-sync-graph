@@ -76,9 +76,9 @@ function Connect-GALSync {
             "Content-Type" = "application/json"
         }
         $script:galSyncData.TokenExpiration = (Get-Date).AddSeconds($tokenRequest.expires_in)
+        return $true
     }
     catch {
         throw (Format-ErrorCode $_).ErrorMessage
     }
-    Write-Output "Connected!"
 }
