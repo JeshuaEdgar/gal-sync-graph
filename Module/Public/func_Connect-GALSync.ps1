@@ -63,4 +63,5 @@ function Connect-GALSync {
     catch {
         throw (Format-ErrorCode $_).ErrorMessage
     }
+    Write-Verbose "Connected!"
 }
