@@ -20,5 +20,4 @@ try {
 }
 catch {
     $_.Exception.Message
-    Read-Host
 }
