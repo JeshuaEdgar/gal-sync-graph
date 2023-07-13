@@ -18,4 +18,15 @@ Describe "gal-sync-graph" {
     It "Should return more than 1 GAL contacts" {
         (Get-GALContacts).Count | Should -BeGreaterThan 1
     }
+    It "Should return 'U.S. Sales' members (17)" {
+        (Get-GALAADGroupMembers -Name "U.S. Sales").Count | Should -Be 17
+    }
+    It "Should return Contacts folder of user" {
+        Get-ContactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -ContactFolderName "Contacts" | Select-Object -ExpandProperty displayName | Should -Be "Contacts"
+    }
+    It "Should create a Contact in the folder" {
+        $contactFolder = Get-ContactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -ContactFolderName "Contacts"
+        $contact = Get-GALContacts[0]
+        New-FolderContact -ContactFolder $contactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -Contact $contact
+    }
 }
