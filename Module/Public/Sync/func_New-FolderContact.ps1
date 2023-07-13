@@ -17,8 +17,9 @@ function New-FolderContact {
         )
     }
     try {
-        New-GraphRequest -Method Post -Endpoint "/users/$($Mailbox)/contactFolders/$($ContactFolder.id)/contacts" -Body $contactBody
+        $newContact = New-GraphRequest -Method Post -Endpoint "/users/$($Mailbox)/contactFolders/$($ContactFolder.id)/contacts" -Body $contactBody
         Write-LogEvent -Level Info -Message "Created contact $($Contact.mail)"
+        return $newContact
     }
     catch {
         Write-LogEvent -Level Error -Message "Failed to create contact $($Contact.mail) for $Mailbox"
