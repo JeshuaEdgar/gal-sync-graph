@@ -8,7 +8,7 @@ function Get-GALContacts {
     try {
         $allContacts = New-GraphRequest -Method Get -Endpoint "/users?`$top=999"
         if (-not $ContactsWithoutPhoneNumber) {
-            $allContacts = $allContacts | Where-Object { $_.businessPhone -or $_.mobilePhone }
+            $allContacts = $allContacts | Where-Object { $_.businessPhones -or $_.mobilePhone }
         }
         if (-not $ContactsWithoutEmail) {
             $allContacts = $allContacts | Where-Object { $_.mail }
