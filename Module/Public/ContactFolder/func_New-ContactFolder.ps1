@@ -10,7 +10,9 @@ function New-ContactFolder {
             displayName    = $ContactFolderName
             parentFolderId = $folderParentID
         }
-        return New-GraphRequest -Method Post -Endpoint "/users/$($Mailbox)/contactFolders" -Body $contactFolderBody
+        $contactFolder = New-GraphRequest -Method Post -Endpoint "/users/$($Mailbox)/contactFolders" -Body $contactFolderBody
+        $contactFolder | Add-Member -MemberType NoteProperty -Name "mailBox" -Value $Mailbox
+        return $contactFolder
     }
     catch {
         throw (Format-ErrorCode $_).ErrorMessage

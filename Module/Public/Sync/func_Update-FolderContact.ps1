@@ -1,7 +1,6 @@
 function Update-FolderContact {
     param (
         [parameter(Mandatory)][object]$ContactFolder,
-        [parameter(Mandatory)][string]$Mailbox,
         [parameter(Mandatory)][object]$OldContact,
         [parameter(Mandatory)][object]$NewContact
     )
@@ -18,7 +17,7 @@ function Update-FolderContact {
                 }
             )
         }
-        New-GraphRequest -Method Patch -Endpoint "/users/$($Mailbox)/contactFolders/$($ContactFolder.id)/contacts/$($OldContact.id)" -Body $updateContactBody
+        New-GraphRequest -Method Patch -Endpoint "/users/$($ContactFolder.mailBox)/contactFolders/$($ContactFolder.id)/contacts/$($OldContact.id)" -Body $updateContactBody
         Write-LogEvent -Level Error -Message "Updated contact $($NewContact.mail)"
     }
     catch {

@@ -11,6 +11,7 @@ function Get-ContactFolder {
             return $false | Out-Null
         }
         else {
+            $contactFolder | Add-Member -MemberType NoteProperty -Name "mailBox" -Value $Mailbox
             return $contactFolder
         }
     }

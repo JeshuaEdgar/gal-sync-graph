@@ -1,7 +1,6 @@
 function New-FolderContact {
     param (
         [parameter(Mandatory)][object]$ContactFolder,
-        [parameter(Mandatory)][string]$Mailbox,
         [parameter(Mandatory)][object]$Contact
     )
     $contactBody = @{
@@ -17,7 +16,7 @@ function New-FolderContact {
         )
     }
     try {
-        $newContact = New-GraphRequest -Method Post -Endpoint "/users/$($Mailbox)/contactFolders/$($ContactFolder.id)/contacts" -Body $contactBody
+        $newContact = New-GraphRequest -Method Post -Endpoint "/users/$($ContactFolder.mailBox)/contactFolders/$($ContactFolder.id)/contacts" -Body $contactBody
         Write-LogEvent -Level Info -Message "Created contact $($Contact.mail)"
         return $newContact
     }
