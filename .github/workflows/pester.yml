@@ -10,22 +10,33 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run Pester tests (pwsh v7)
+      env:
+        APPLICATIONID: ${{ secrets.APPLICATIONID}}
+        APPLICATIONSECRET: ${{ secrets.APPLICATIONSECRET}}
+        TENANTID: ${{ secrets.TENANTID}}
       run: |
         Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor
         Set-PSRepository psgallery -InstallationPolicy trusted
-        Install-Module -Name Pester -RequiredVersion 5.0.4 -confirm:$false -Force
-        Invoke-Pester -Path "tests"
+        Install-Module -Name Pester -RequiredVersion 5.5.0 -confirm:$false -Force
+        $parameters = @{applicationID = $APPLICATIONID; applicationSecret = $APPLICATIONSECRET; tenantID = $TENANTID  }
+        Invoke-Pester -Path "./Tests/GALSync.tests.ps1" -Parameters $parameters 
+        if ($Error[0].Fullyqualifiederrorid -eq 'PesterAssertionFailed') {exit 1}
       shell: pwsh
-  
+
   test-poshv5:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
     - name: Run Pester tests (PowerShell v5)
+      env:
+        APPLICATIONID: ${{ secrets.APPLICATIONID}}
+        APPLICATIONSECRET: ${{ secrets.APPLICATIONSECRET}}
+        TENANTID: ${{ secrets.TENANTID}}
       run: |
         Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor
         Set-PSRepository psgallery -InstallationPolicy trusted
-        Install-Module -Name Pester -RequiredVersion 5.0.4 -Confirm:$false -Force
-        Invoke-Pester -Path "tests"
+        Install-Module -Name Pester -RequiredVersion 5.5.0 -Confirm:$false -Force
+        $parameters = @{applicationID = $APPLICATIONID; applicationSecret = $APPLICATIONSECRET; tenantID = $TENANTID  }
+        Invoke-Pester -Path "./Tests/GALSync.tests.ps1" -Parameters $parameters 
         if ($Error[0].Fullyqualifiederrorid -eq 'PesterAssertionFailed') {exit 1}
       shell: powershell
