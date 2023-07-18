@@ -5,6 +5,7 @@ param (
 )
 BeforeAll {
     $moduleRoot = (Get-Item $PSScriptRoot).Parent.FullName
+    Write-Host $moduleRoot
     Import-Module "$moduleRoot/Module/Gal-Sync.psm1" -Force
 }
 
