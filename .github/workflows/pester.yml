@@ -2,13 +2,13 @@ name: Pester
 on:
   push:
 jobs:
-  test-pwshv7:
+  test-pwsh-v7:
     strategy:
       matrix:
         platform: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.platform }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Run Pester tests (pwsh v7)
       run: |
         Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor
@@ -19,10 +19,10 @@ jobs:
         if ($Error[0].Fullyqualifiederrorid -eq 'PesterAssertionFailed') {exit 1}
       shell: pwsh
 
-  test-poshv5:
+  test-posh-v5:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Run Pester tests (PowerShell v5)
       run: |
         Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor

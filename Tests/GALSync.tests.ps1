@@ -5,7 +5,7 @@ param (
 )
 BeforeAll {
     $moduleRoot = (Get-Item $PSScriptRoot).Parent.FullName
-    Import-Module "$moduleRoot/Module/Gal-Sync.psd1" -Force
+    Import-Module "$moduleRoot/Module/Gal-Sync.psm1" -Force
 }
 
 Describe "gal-sync-graph" {
