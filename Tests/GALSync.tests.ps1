@@ -4,6 +4,7 @@ param (
     [parameter(Mandatory)]$tenantID
 )
 BeforeAll {
+    $moduleRoot = (Get-Item $PSScriptRoot).Parent.FullName 
     Import-Module "$moduleRoot\Module\Gal-Sync.psd1" -Force
 }
 
