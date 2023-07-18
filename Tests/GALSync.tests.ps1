@@ -4,8 +4,7 @@ param (
     [parameter(Mandatory)]$tenantID
 )
 BeforeAll {
-    $moduleRoot = (Get-Item $PSScriptRoot).Parent.FullName 
-    Import-Module "$moduleRoot\Module\Gal-Sync.psd1" -Force
+    Import-Module "./Module/Gal-Sync.psd1" -Force
 }
 
 Describe "gal-sync-graph" {
