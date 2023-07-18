@@ -19,7 +19,7 @@ jobs:
         Set-PSRepository psgallery -InstallationPolicy trusted
         Install-Module -Name Pester -RequiredVersion 5.5.0 -confirm:$false -Force
         $parameters = @{applicationID = $APPLICATIONID; applicationSecret = $APPLICATIONSECRET; tenantID = $TENANTID  }
-        Invoke-Pester -Path "./Tests/GALSync.tests.ps1" -Parameters $parameters 
+        ./Tests/GALSync.tests.ps1 @parameters 
         if ($Error[0].Fullyqualifiederrorid -eq 'PesterAssertionFailed') {exit 1}
       shell: pwsh
 
@@ -37,6 +37,6 @@ jobs:
         Set-PSRepository psgallery -InstallationPolicy trusted
         Install-Module -Name Pester -RequiredVersion 5.5.0 -Confirm:$false -Force
         $parameters = @{applicationID = $APPLICATIONID; applicationSecret = $APPLICATIONSECRET; tenantID = $TENANTID  }
-        Invoke-Pester -Path "./Tests/GALSync.tests.ps1" -Parameters $parameters 
+        ./Tests/GALSync.tests.ps1 @parameters 
         if ($Error[0].Fullyqualifiederrorid -eq 'PesterAssertionFailed') {exit 1}
       shell: powershell
