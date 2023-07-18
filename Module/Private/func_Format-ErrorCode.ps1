@@ -7,7 +7,11 @@ function Format-ErrorCode {
 
     try {
         if ($ErrorObject -isnot [Microsoft.PowerShell.Commands.InvokeRestMethodCommand]) {
-            return $ErrorObject.Exception.Message
+            return [PSCustomObject]@{
+                ErrorMessage  = $ErrorObject.Exception.Message
+                FullException = $ErrorObject.exception.GetType().fullname
+                StackTrace    = $ErrorObject.ScriptStackTrace
+            }
         }
         $httpError = $ErrorObject.Exception.Response.StatusCode.value__ #http error code (universal)
 

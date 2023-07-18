@@ -21,7 +21,7 @@ function Sync-GALContacts {
     }
 
     # get contacts in that folder
-    $contactsInFolder = Get-FolderContact -ContactFolder $contactFolder -Mailbox $Mailbox
+    $contactsInFolder = Get-FolderContact -ContactFolder $contactFolder 
 
     # compare lists of new contacts vs old.
     $removeContacts
@@ -56,4 +56,3 @@ function Sync-GALContacts {
         }
     }
 }
-

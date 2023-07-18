@@ -21,6 +21,7 @@ function Update-FolderContact {
         Write-LogEvent -Level Error -Message "Updated contact $($NewContact.mail)"
     }
     catch {
-        Write-LogEvent -Level Error -Message "Failed to update contact $($NewContact.mail)"
+        # Write-LogEvent -Level Error -Message "Failed to update contact $($NewContact.mail)"
+        throw (Format-ErrorCode $_).ErrorMessage
     }
 }

@@ -24,16 +24,16 @@ Describe "gal-sync-graph" {
     # It "Should create a Contact in the folder" {
     #     $contactFolder = Get-ContactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -ContactFolderName "Contacts"
     #     $contact = (Get-GALContacts)[0]
-    #     New-FolderContact -ContactFolder $contactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -Contact $contact
+    #     New-FolderContact -ContactFolder $contactFolder -Contact $contact
     # }
     # It "Should get the newly created contact" {
     #     $contactFolder = Get-ContactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -ContactFolderName "Contacts"
     #     $contactDisplayname = ((Get-GALContacts)[0]).displayName
-    #     [string](Get-FolderContact -ContactFolder $contactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -DisplayName | Select-Object -ExpandProperty displayName) | Should -BeExactly $contactDisplayname
+    #     Get-FolderContact -ContactFolder $contactFolder -DisplayName $contactDisplayname | Select-Object -ExpandProperty displayName | Should -BeExactly $contactDisplayname
     # }
     # It "Should be able to delete the contact" {
     #     $contactFolder = Get-ContactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -ContactFolderName "Contacts"
-    #     $contact = Get-FolderContact -ContactFolder $contactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com"
+    #     $contact = Get-FolderContact -ContactFolder $contactFolder 
     #     Remove-FolderContact -ContactFolder $contactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -Contact $contact
     # }
 }
