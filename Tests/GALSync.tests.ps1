@@ -4,7 +4,7 @@ param (
     [parameter(Mandatory)]$tenantID
 )
 BeforeAll {
-    Import-Module (Resolve-Path('Module/GAL-Sync.psd1').Path) -Force
+    Import-Module (Resolve-Path('Module/GAL-Sync.psd1')) -Force -Verbose
 }
 
 Describe "gal-sync-graph" {
