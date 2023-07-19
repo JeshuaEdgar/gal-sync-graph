@@ -1,17 +1,19 @@
 function Remove-FolderContact {
     param (
         [parameter(Mandatory)][object]$ContactFolder,
-        [parameter(Mandatory)][object]$Contact
+        [parameter(Mandatory, ValueFromPipeline)][object]$Contact
     )
     process {
-        try {
-            New-GraphRequest -Method Delete -Endpoint "/users/$($ContactFolder.mailBox)/contactFolders/$($ContactFolder.id)/contacts/$($Contact.id)"
-            Write-LogEvent -Level Info -Message "Removed contact $($Contact.mail)"
-            return $true
-        }
-        catch {
-            # Write-LogEvent -Level Error -Message "Failed to remove contact $($Contact.mail)"
-            throw (Format-ErrorCode $_).ErrorMessage
+        foreach ($contactItem in $Contact) {
+            try {
+                New-GraphRequest -Method Delete -Endpoint "/users/$($ContactFolder.mailBox)/contactFolders/$($ContactFolder.id)/contacts/$($contactItem.id)" | Out-Null
+                Write-LogEvent -Level Info -Message "Removed contact $($contactItem.displayName) for $($ContactFolder.mailBox)"
+                return $true
+            }
+            catch {
+                # Write-LogEvent -Level Error -Message "Failed to remove contact $($Contact.mail)"
+                throw (Format-ErrorCode $_).ErrorMessage
+            }
         }
     }
 }

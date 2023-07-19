@@ -16,24 +16,25 @@ Describe "gal-sync-graph" {
         (Get-GALContacts).Count | Should -BeGreaterThan 1
     }
     It "Should return 17 members" {
-        (Get-GALAADGroupMembers -Name "U.S. Sales").Count | Should -Be 17
+        Get-GALAADGroupMembers -Name "U.S. Sales" | Should -HaveCount 17 
     }
     It "Should return Contacts folder of user" {
         Get-ContactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -ContactFolderName "Contacts" | Select-Object -ExpandProperty displayName | Should -Be "Contacts"
     }
-    # It "Should create a Contact in the folder" {
-    #     $contactFolder = Get-ContactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -ContactFolderName "Contacts"
-    #     $contact = (Get-GALContacts)[0]
-    #     New-FolderContact -ContactFolder $contactFolder -Contact $contact
-    # }
-    # It "Should get the newly created contact" {
-    #     $contactFolder = Get-ContactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -ContactFolderName "Contacts"
-    #     $contactDisplayname = ((Get-GALContacts)[0]).displayName
-    #     Get-FolderContact -ContactFolder $contactFolder -DisplayName $contactDisplayname | Select-Object -ExpandProperty displayName | Should -BeExactly $contactDisplayname
-    # }
-    # It "Should be able to delete the contact" {
-    #     $contactFolder = Get-ContactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -ContactFolderName "Contacts"
-    #     $contact = Get-FolderContact -ContactFolder $contactFolder 
-    #     Remove-FolderContact -ContactFolder $contactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -Contact $contact
-    # }
+    It "Should create a Contact in the folder" {
+        $contactFolder = Get-ContactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -ContactFolderName "Contacts"
+        $contact = (Get-GALContacts)[0]
+        New-FolderContact -ContactFolder $contactFolder -Contact $contact | Should -BeTrue
+    }
+    It "Should get the newly created contact" {
+        $contactFolder = Get-ContactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -ContactFolderName "Contacts"
+        $contactDisplayname = ((Get-GALContacts)[0]).displayName
+        Get-FolderContact -ContactFolder $contactFolder -DisplayName $contactDisplayname | Select-Object -ExpandProperty displayName | Should -Contain $contactDisplayname
+    }
+    It "Should be able to delete contacts" {
+        $contactFolder = Get-ContactFolder -Mailbox "DiegoS@48vyq4.onmicrosoft.com" -ContactFolderName "Contacts"
+        $contactDisplayname = ((Get-GALContacts)[0]).displayName
+        $contact = Get-FolderContact -ContactFolder $contactFolder -DisplayName $contactDisplayname
+        Remove-FolderContact -ContactFolder $contactFolder -Contact $contact | Should -BeTrue
+    }
 }
