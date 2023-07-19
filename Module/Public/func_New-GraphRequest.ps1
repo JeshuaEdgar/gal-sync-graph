@@ -40,8 +40,18 @@ function New-GraphRequest {
         $reqSplat.Body += $Body | ConvertTo-Json
     }
 
+    $reqSplat.GetEnumerator() | ForEach-Object {
+        Write-Verbose "Parameter : $($_.Key)"
+        Write-Verbose "Value     : $($_.Value)"
+    }
     try {
-        return (Invoke-RestMethod @reqSplat).value
+        $request = Invoke-RestMethod @reqSplat
+        if ($request.PsObject.Members.Name | Where-Object { $_ -eq "value" } ) {
+            return $request.value
+        }
+        else {
+            return $request 
+        }
     }
     catch {
         throw (Format-ErrorCode $_).ErrorMessage

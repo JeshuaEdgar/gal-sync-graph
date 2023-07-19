@@ -1,4 +1,5 @@
 function New-FolderContact {
+    [cmdletbinding()]
     param (
         [parameter(Mandatory)][object]$ContactFolder,
         [parameter(Mandatory)][object]$Contact
@@ -7,21 +8,20 @@ function New-FolderContact {
         givenName      = $contact.givenName
         surname        = $contact.surname
         mobilePhone    = $contact.mobilePhone
-        businessPhones = $contact.businessPhones
         jobTitle       = $contact.jobTitle
-        emailAddresses = @(@{
-                address = $contact.mail
-                name    = $contact.displayName
-            }
-        )
+        department     = $conact.department
+        emailAddresses = $contact.emailAddresses
     }
-    try {
+    # add these based on pressence
+    if ($contact.homePhones) { $contactBody.homePhones = $contact.homePhones }
+    if ($contact.businessPhones) { $contactBody.businessPhones = $contact.businessPhones }
+
+    try { 
         New-GraphRequest -Method Post -Endpoint "/users/$($ContactFolder.mailBox)/contactFolders/$($ContactFolder.id)/contacts" -Body $contactBody | Out-Null
         Write-LogEvent -Level Info -Message "Created contact $($Contact.displayName) for $($ContactFolder.mailBox)"
         return $true
     }
     catch {
-        # Write-LogEvent -Level Error -Message "Failed to create contact $($Contact.mail) for $($ContactFolder.mailBox)"
         throw (Format-ErrorCode $_).ErrorMessage
     }
 }

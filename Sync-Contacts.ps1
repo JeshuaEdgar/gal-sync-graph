@@ -19,15 +19,14 @@ if ($LogPath) {
     Start-Transcript -OutputDirectory $LogPath
 }
 
+Import-Module .\Module\GAL-Sync.psm1 -Verbose -Force
+Connect-GALSync -CredentialFile $CredentialPath -Tenant $Tenant
+
 # Get users based on input
-if ($Directory) { $mailBoxesToSync = Get-GALContacts -ContactsWithoutPhoneNumber $true | Select-Object -ExpandProperty mail }
+if ($Directory) { $mailBoxesToSync = (Get-GALContacts -ContactsWithoutPhoneNumber $true).emailaddresses | Select-Object -ExpandProperty address }
 elseif ($AzureADGroup) { $mailBoxesToSync = Get-GALAADGroupMembers -Name $Target | Select-Object -ExpandProperty mail }
 elseif ($MailboxList -is [array]) { $mailBoxesToSync = $MailboxList }
-else { Write-Error "No valid mailbox input"; Read-Host }
-
-Import-Module .\Module\GAL-Sync.psm1 -Verbose -Force
-
-Connect-GALSync -CredentialFile $CredentialPath -Tenant $Tenant
+else { Write-Error "No valid mailbox input"; Read-Host; exit 1 }
 
 $GALContacts = Get-GALContacts -ContactsWithoutPhoneNumber $ContactsWithoutPhoneNumber -ContactsWithoutEmail $ContactsWithoutEmail
 
@@ -36,6 +35,7 @@ foreach ($mailBox in $mailBoxesToSync) {
         Sync-GALContacts -Mailbox $mailBox -ContactList $GALContacts -ContactFolderName $ContactFolderName
     }
     catch {
+        $_.Exception.Message
         Write-LogEvent -Level Error -Message "Failed to sync mailbox: $($mailBox)"
     }
 }

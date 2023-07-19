@@ -1,4 +1,5 @@
 function Update-FolderContact {
+    [cmdletbinding()]
     param (
         [parameter(Mandatory)][object]$ContactFolder,
         [parameter(Mandatory)][object]$OldContact,
@@ -9,19 +10,19 @@ function Update-FolderContact {
             givenName      = $NewContact.givenName
             surname        = $NewContact.surname
             mobilePhone    = $NewContact.mobilePhone
-            businessPhones = $NewContact.businessPhones
             jobTitle       = $NewContact.jobTitle
-            emailAddresses = @(@{
-                    address = $NewContact.mail
-                    name    = $NewContact.displayName
-                }
-            )
+            department     = $NewContact.department
+            emailAddresses = $NewContact.emailAddresses
         }
-        New-GraphRequest -Method Patch -Endpoint "/users/$($ContactFolder.mailBox)/contactFolders/$($ContactFolder.id)/contacts/$($OldContact.id)" -Body $updateContactBody
-        Write-LogEvent -Level Error -Message "Updated contact $($NewContact.mail)"
+        # add these based on pressence
+        if ($NewContact.homePhones) { $updateContactBody.homePhones = $NewContact.homePhones }
+        if ($NewContact.businessPhones) { $updateContactBody.businessPhones = $NewContact.businessPhones }
+        New-GraphRequest -Method Patch -Endpoint "/users/$($ContactFolder.mailBox)/contactFolders/$($ContactFolder.id)/contacts/$($OldContact.id)" -Body $updateContactBody | Out-Null
+        Write-LogEvent -Level Info -Message "Updated contact $($OldContact.displayName) for $($ContactFolder.mailBox)"
+        
+        return $true
     }
     catch {
-        # Write-LogEvent -Level Error -Message "Failed to update contact $($NewContact.mail)"
         throw (Format-ErrorCode $_).ErrorMessage
     }
 }

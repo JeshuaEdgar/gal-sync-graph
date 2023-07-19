@@ -11,7 +11,6 @@ function Remove-FolderContact {
                 return $true
             }
             catch {
-                # Write-LogEvent -Level Error -Message "Failed to remove contact $($Contact.mail)"
                 throw (Format-ErrorCode $_).ErrorMessage
             }
         }
