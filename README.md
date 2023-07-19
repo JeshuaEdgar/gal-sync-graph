@@ -19,7 +19,29 @@ For authentication client credentials are necesary, all other forms of authentic
 
 6. Check commandline output/logs for potential troubleshooting, you can always shoot in a issue on GitHub.
 
-## TODO: Parameters for sync
+## Parameters for sync (including examples)
+
+- Mandatory
+    - ```-CredentialPath "C:\Path\To\Credentials\credential.cred```
+        - Use ```New-StoredCrdential.ps1``` to store a new credential, it will automatically createa a credential folder and a file inside of it for unattenant scripts.
+    - ```-Tenant "22f2c12f-22f3-4c85-bf2c-e3f6ae7fa75b"```
+        - Provide tenant ID from Azure AD or use the default *.onmicrosoft.com address from your organisation.
+    - ```-ContactFolderName "GAL Sync"```
+        - Provide the name of the folder that will be created under the default Contacts folder.
+
+- Optional
+    - ```-Directory```
+        - Use this option if you want everyone in the organisation to have the GAL list synced.
+    - ```-AzureADGroup "SG_GALSync"```
+        - Use this option if you want to target a certain Azure AD Group.
+    - ```-MailboxList @("mailbox1@tosync.net", "mailbox2@tosync.net", "mailbox3@tosync.net")```
+        - Use this option if you want to just sync a few mailboxes.
+    - ```-LogPath C:\Path\To\Logs```
+        - Define this if you want logs.
+    - ```-ContactsWithoutPhoneNumber```
+        - Use this option if you want to sync GAL contacts without phone numbers.
+    - ```-ContactsWithoutEmail```
+        - Use this option if you want to sync GAL contacts without email address.
 
 ## Azure Application Permissions needed
 
@@ -35,7 +57,3 @@ For authentication client credentials are necesary, all other forms of authentic
     - [Create contact folder](https://learn.microsoft.com/en-us/graph/api/user-post-contactfolders)
     - [Create contact](https://learn.microsoft.com/en-us/graph/api/user-post-contacts)
     - [Update contact](https://learn.microsoft.com/en-us/graph/api/contact-update)
-- Application.Read.All
-    - [Get application permissions](https://learn.microsoft.com/en-us/graph/api/application-get)
-<!-- - Exchange Online
-    - Please visit [this](https://learn.microsoft.com/en-us/powershell/exchange/app-only-auth-powershell-v2?view=exchange-ps#step-2-assign-api-permissions-to-the-application) article from Microsoft and apply it to your Azure AD Application -->
