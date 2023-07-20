@@ -7,5 +7,5 @@ function Write-LogEvent {
     
     $logOutput = $timeStamp, $Level, $Message -join " | "
 
-    Write-Host $logOutput
+    Write-Output $logOutput
 }

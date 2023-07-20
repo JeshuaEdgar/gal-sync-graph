@@ -18,8 +18,6 @@ function Update-FolderContact {
         if ($NewContact.homePhones) { $updateContactBody.homePhones = $NewContact.homePhones }
         if ($NewContact.businessPhones) { $updateContactBody.businessPhones = $NewContact.businessPhones }
         New-GraphRequest -Method Patch -Endpoint "/users/$($ContactFolder.mailBox)/contactFolders/$($ContactFolder.id)/contacts/$($OldContact.id)" -Body $updateContactBody | Out-Null
-        Write-LogEvent -Level Info -Message "Updated contact $($OldContact.displayName) for $($ContactFolder.mailBox)"
-        
         return $true
     }
     catch {

@@ -18,9 +18,10 @@ function Sync-GALContacts {
     if (-not $contactFolder) {
         try {
             $contactFolder = New-ContactFolder -Mailbox $Mailbox -ContactFolderName $ContactFolderName 
+            Write-LogEvent -Level Info -Message "Created folder $($ContactFolderName) for $($Mailbox)"
         }
         catch {
-            Write-EventLog -Level Error -Message "Failed to create contact folder $ContactFolderName in mailbox $Mailbox"
+            Write-LogEvent -Level Error -Message "Failed to create folder $ContactFolderName for $Mailbox"
         }
     }
 
@@ -29,7 +30,7 @@ function Sync-GALContacts {
         $contactsInFolder = Get-FolderContact -ContactFolder $contactFolder 
     }
     catch {
-        Write-EventLog -Level Error -Message "Failed to create contact folder $ContactFolderName in mailbox $Mailbox"
+        Write-LogEvent -Level Error -Message "Failed to create contact folder $ContactFolderName in mailbox $Mailbox"
     }
 
     # compare lists of new contacts vs old.
@@ -48,9 +49,10 @@ function Sync-GALContacts {
         $removeContacts | ForEach-Object { 
             try { 
                 Remove-FolderContact -Contact $_ -ContactFolder $contactFolder | Out-Null
+                Write-LogEvent -Level Info -Message "Removed contact $($_.displayName)"
             }
             catch {
-                Write-EventLog -Level Error -Message "Failed to remove contact $($_.displayName)"
+                Write-LogEvent -Level Error -Message "Failed to remove contact $($_.displayName)"
             }
         }
     }
@@ -59,9 +61,10 @@ function Sync-GALContacts {
         $updateContacts | ForEach-Object { 
             try { 
                 Update-FolderContact -Contact $_ -ContactFolder $contactFolder | Out-Null
+                Write-LogEvent -Level Info -Message "Updated contact $($_.displayName)"
             }
             catch {
-                Write-EventLog -Level Error -Message "Failed to update contact $($_.displayName)"
+                Write-LogEvent -Level Error -Message "Failed to update contact $($_.displayName)"
             }
         }
     }
@@ -70,9 +73,10 @@ function Sync-GALContacts {
         $newContacts | ForEach-Object { 
             try { 
                 New-FolderContact -Contact $_ -ContactFolder $contactFolder | Out-Null
+                Write-LogEvent -Level Info -Message "Created contact $($_.displayName)"
             }
             catch {
-                Write-EventLog -Level Error -Message "Failed to create contact $($_.displayName)"
+                Write-LogEvent -Level Error -Message "Failed to create contact $($_.displayName)"
             }
         }
     }

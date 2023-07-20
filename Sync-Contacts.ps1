@@ -35,7 +35,7 @@ foreach ($mailBox in $mailBoxesToSync) {
         Sync-GALContacts -Mailbox $mailBox -ContactList $GALContacts -ContactFolderName $ContactFolderName
     }
     catch {
-        $_.Exception.Message
         Write-LogEvent -Level Error -Message "Failed to sync mailbox: $($mailBox)"
     }
 }
+Stop-Transcript

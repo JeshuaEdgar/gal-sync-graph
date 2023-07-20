@@ -1,16 +1,11 @@
-# [unreleased]
-
-## TODO
-
-- Finish/tidy ```Sync-Contacts.ps1```
-- Create ```func_Sync-GALContacts.ps1```
+# [v0.0.1-beta]
 
 ## Added 
 
-- Get GAL contacts
-    - Filter with ```$ContactsWithoutPhoneNumber``` and ```$ContactsWithoutEmail```
-- Connect with Graph easily using a credential file
-    - Check permissiosn needed for the script to run
-- Various helpers/tools for debugging and handling requests
-- Get Azure AD Group members
-    - Nested groups are allowed
+- Sync GAL Contacts with either directory (all users), Azure AD group or a mailbox list
+- Store credentials for unattended scheduled use
+- Docs in [README](README.md)
+- Create and get contact folders
+- Get, create, update and remove contacts inside of folders
+- Logging for debugging
+- Unit tests (ran on Microsoft 365 Dev Environment)

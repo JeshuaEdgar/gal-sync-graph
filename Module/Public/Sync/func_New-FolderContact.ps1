@@ -18,7 +18,6 @@ function New-FolderContact {
 
     try { 
         New-GraphRequest -Method Post -Endpoint "/users/$($ContactFolder.mailBox)/contactFolders/$($ContactFolder.id)/contacts" -Body $contactBody | Out-Null
-        Write-LogEvent -Level Info -Message "Created contact $($Contact.displayName) for $($ContactFolder.mailBox)"
         return $true
     }
     catch {

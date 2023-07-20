@@ -1,4 +1,4 @@
-# GAL (Global Address List) Sync
+# GAL (Global Address List) Sync using Graph | ![](https://img.shields.io/github/actions/workflow/status/jeshuaedgar/gal-sync-graph/pester.yml)
 
 Ever wondered who called you from your organisation on your iPhone/Android device? Microsoft makes it unnecesarily hard to sync Global Address List contacts to your phone. Yes Outlook works great... but it does not sync with your native contacts app, so pretty useless when it comes to resolving the caller ID.
 
