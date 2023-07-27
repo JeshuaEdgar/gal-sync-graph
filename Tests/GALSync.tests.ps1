@@ -1,3 +1,4 @@
+[cmdletbinding()]
 param (
     [parameter(Mandatory)]$applicationID,
     [parameter(Mandatory)]$applicationSecret,
@@ -19,10 +20,10 @@ Describe "gal-sync-graph" {
         }
     }
     Context "Getting contacts/users" {
-        It "Should return 17 GAL contacts" {
+        It "Should return GAL contacts" {
             Get-GALContacts | Should -HaveCount 17
         }
-        It "Should return 17 Azure AD members" {
+        It "Should return Azure AD members" {
             Get-GALAADGroupMembers -Name "U.S. Sales" | Should -HaveCount 17 
         }
     }

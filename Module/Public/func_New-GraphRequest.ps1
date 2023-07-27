@@ -56,6 +56,8 @@ function New-GraphRequest {
         $request = Invoke-RestMethod @reqSplat
         $output += (Check-OutputData $request)
         if ($request.'@odata.nextLink') {
+            Write-VerboseEvent "Found @odata.nextLink"
+            Write-VerboseEvent $request.'@odata.nextLink'
             do {
                 $request = Invoke-RestMethod $request.'@odata.nextLink' -Headers $script:galSyncData.GraphAuthHeader
                 $output += (Check-OutputData $request)

@@ -7,7 +7,7 @@ function Get-GALAADGroupMembers {
     try {
         $userList = @()
         Write-VerboseEvent "Getting AD members for $Name"
-        $groupList = New-GraphRequest -Method Get -Endpoint ("/groups?`$filter=displayName eq '{0}')" -f $Name)
+        $groupList = New-GraphRequest -Endpoint ("/groups?`$filter=startswith(displayName, '{0}')" -f $Name)
         if ($groupList) {
             do {
                 foreach ($group in $groupList) {
