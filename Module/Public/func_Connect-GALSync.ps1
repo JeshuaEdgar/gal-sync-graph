@@ -41,7 +41,7 @@ function Connect-GALSync {
     }
 
 
-    $necesaryAppRoles = @("Group.Read.All", "OrgContact.Read.All", "Contacts.ReadWrite", "Application.Read.All", "User.Read.All")
+    $necesaryAppRoles = @("Group.Read.All", "Contacts.ReadWrite", "User.Read.All")
 
     try {
         # Make body
