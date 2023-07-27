@@ -1,12 +1,8 @@
 function New-GraphRequest {
     param (
         [CmdletBinding()]
-        [parameter (Mandatory)]
-        [string]$Endpoint,
-
-        [parameter (Mandatory)]
-        [ValidateSet("Delete", "Get", "Patch", "Post", "Put")]$Method,
-        
+        [parameter (Mandatory)][string]$Endpoint,
+        [ValidateSet("Delete", "Get", "Patch", "Post", "Put")]$Method = "Get",
         [array]$Body,
         [switch]$Beta
     )
@@ -41,11 +37,32 @@ function New-GraphRequest {
     }
 
     $reqSplat.GetEnumerator() | ForEach-Object {
+        if ($_.value -is [System.Collections.Hashtable]) {
+            $_.Value.GetEnumerator() | ForEach-Object {
+                Write-Verbose "Parameter : $($_.Key)"
+                Write-Verbose "Value     : $($_.Value)"
+            }
+        }
         Write-Verbose "Parameter : $($_.Key)"
         Write-Verbose "Value     : $($_.Value)"
     }
     try {
+        function Check-OutputData ($data) {
+            if ($data.PsObject.Members.Name -contains "value") { $output = $data.value }
+            else { $output = $data }
+            return $output
+        }
+        $output = @()
         $request = Invoke-RestMethod @reqSplat
+        $output += (Check-OutputData $request)
+        if ($request.'@odata.nextLink') {
+            do {
+                $request = Invoke-RestMethod $request.'@odata.nextLink' -Headers $script:galSyncData.GraphAuthHeader
+                $output += (Check-OutputData $request)
+            } until (
+                (-not $request.'@odata.nextLink')
+            )
+        }
         if ($request.PsObject.Members.Name | Where-Object { $_ -eq "value" } ) {
             return $request.value
         }

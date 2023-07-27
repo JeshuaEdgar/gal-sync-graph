@@ -24,7 +24,7 @@ Connect-GALSync -CredentialFile $CredentialPath -Tenant $Tenant
 
 # Get users based on input
 if ($Directory) { $mailBoxesToSync = (Get-GALContacts -ContactsWithoutPhoneNumber $true).emailaddresses | Select-Object -ExpandProperty address }
-elseif ($AzureADGroup) { $mailBoxesToSync = Get-GALAADGroupMembers -Name $Target | Select-Object -ExpandProperty mail }
+elseif ($AzureADGroup) { $mailBoxesToSync = Get-GALAADGroupMembers -Name $AzureADGroup | Select-Object -ExpandProperty mail }
 elseif ($MailboxList -is [array]) { $mailBoxesToSync = $MailboxList }
 else { Write-Error "No valid mailbox input"; Read-Host; exit 1 }
 
@@ -38,4 +38,6 @@ foreach ($mailBox in $mailBoxesToSync) {
         Write-LogEvent -Level Error -Message "Failed to sync mailbox: $($mailBox)"
     }
 }
-Stop-Transcript
+if ($LogPath) {
+    Stop-Transcript
+}

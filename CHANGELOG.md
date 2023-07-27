@@ -1,3 +1,20 @@
+# [v0.0.3-beta]
+
+## Added
+
+- Pagination and more verbose details for ```New-GraphRequest```
+
+## Fixed
+
+- Azure AD Group name in sync script
+- Sync script log path stop transcript
+
+# [v0.0.2-beta]
+
+## Fixed
+
+- Connect-GALSync was still requiring ```Applications.Read.All```
+
 # [v0.0.1-beta]
 
 ## Added 
