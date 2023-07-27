@@ -5,24 +5,23 @@ function Sync-GALContacts {
         [parameter(Mandatory)][string]$ContactFolderName,
         [parameter(Mandatory)][array]$ContactList
     )
-    Write-LogEvent -Level Info -Message "Beginning sync of $Mailbox" 
-    # Get contact folder
+    Write-LogEvent -Level Info -Message "Beginning sync for $($Mailbox)" 
+
+    # Get/create contact folder
     try {
         $contactFolder = Get-ContactFolder -Mailbox $Mailbox -ContactFolderName $ContactFolderName
+        if ($contactFolder) { Write-LogEvent -Level Info -Message "Found folder $($ContactFolderName) for $($Mailbox)" }
+        else {
+            try {
+                $contactFolder = New-ContactFolder -Mailbox $Mailbox -ContactFolderName $ContactFolderName 
+                Write-LogEvent -Level Info -Message "Created folder $($ContactFolderName) for $($Mailbox)"
+            }
+            catch { throw "Something went wrong creating the contact folder" }
+        }
+        if (-not $contactFolder) { throw "No contact folder found or not able to create one" }
     }
     catch {
-        throw "Something went wrong getting the contact folder"
-    }
-
-    # create folder
-    if (-not $contactFolder) {
-        try {
-            $contactFolder = New-ContactFolder -Mailbox $Mailbox -ContactFolderName $ContactFolderName 
-            Write-LogEvent -Level Info -Message "Created folder $($ContactFolderName) for $($Mailbox)"
-        }
-        catch {
-            Write-LogEvent -Level Error -Message "Failed to create folder $ContactFolderName for $Mailbox"
-        }
+        throw "Something went wrong getting the contact folder for $($Mailbox)"
     }
 
     # get contacts in that folder
@@ -30,7 +29,7 @@ function Sync-GALContacts {
         $contactsInFolder = Get-FolderContact -ContactFolder $contactFolder 
     }
     catch {
-        Write-LogEvent -Level Error -Message "Failed to create contact folder $ContactFolderName in mailbox $Mailbox"
+        throw "Failed to create contact folder $($ContactFolderName) in mailbox $($Mailbox)"
     }
 
     # compare lists of new contacts vs old.
@@ -57,7 +56,7 @@ function Sync-GALContacts {
         }
     }
 
-    if ($updateContacts) {
+    elseif ($updateContacts) {
         $updateContacts | ForEach-Object { 
             try { 
                 Update-FolderContact -Contact $_ -ContactFolder $contactFolder | Out-Null
@@ -69,7 +68,7 @@ function Sync-GALContacts {
         }
     }
 
-    if ($newContacts) {
+    elseif ($newContacts) {
         $newContacts | ForEach-Object { 
             try { 
                 New-FolderContact -Contact $_ -ContactFolder $contactFolder | Out-Null
@@ -79,5 +78,8 @@ function Sync-GALContacts {
                 Write-LogEvent -Level Error -Message "Failed to create contact $($_.displayName)"
             }
         }
+    }
+    else {
+        Write-LogEvent -Level Info -Message "No new contacts available to sync"
     }
 }

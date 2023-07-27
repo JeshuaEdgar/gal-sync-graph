@@ -6,7 +6,8 @@ function Get-GALAADGroupMembers {
     )
     try {
         $userList = @()
-        $groupList = New-GraphRequest -Method Get -Endpoint ("/groups?`$filter=startswith(displayName,'{0}')" -f $Name)
+        Write-VerboseEvent "Getting AD members for $Name"
+        $groupList = New-GraphRequest -Method Get -Endpoint ("/groups?`$filter=displayName eq '{0}')" -f $Name)
         if ($groupList) {
             do {
                 foreach ($group in $groupList) {
@@ -18,10 +19,11 @@ function Get-GALAADGroupMembers {
             } until (
                 ($users | Where-Object { $_."@odata.type" -eq "#microsoft.graph.group" }).count -eq 0
             )
+            Write-VerboseEvent "Found users in $Name"
             return $userList
         }
         else {
-            Write-Host "No users found in $Name"
+            Write-Warning "No users found in $Name"
         }
     }
     catch {

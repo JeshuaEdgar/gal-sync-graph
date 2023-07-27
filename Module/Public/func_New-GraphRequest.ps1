@@ -39,12 +39,12 @@ function New-GraphRequest {
     $reqSplat.GetEnumerator() | ForEach-Object {
         if ($_.value -is [System.Collections.Hashtable]) {
             $_.Value.GetEnumerator() | ForEach-Object {
-                Write-Verbose "Parameter : $($_.Key)"
-                Write-Verbose "Value     : $($_.Value)"
+                Write-VerboseEvent "Parameter : $($_.Key)"
+                Write-VerboseEvent "Value     : $($_.Value)"
             }
         }
-        Write-Verbose "Parameter : $($_.Key)"
-        Write-Verbose "Value     : $($_.Value)"
+        Write-VerboseEvent "Parameter : $($_.Key)"
+        Write-VerboseEvent "Value     : $($_.Value)"
     }
     try {
         function Check-OutputData ($data) {

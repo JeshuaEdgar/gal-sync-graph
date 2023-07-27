@@ -5,6 +5,7 @@ function Get-GALContacts {
         [bool]$ContactsWithoutEmail
     )
     try {
+        Write-VerboseEvet "Getting GAL contacts"
         $allContacts = New-GraphRequest -Method Get -Endpoint "/users?`$top=999&`$select=*" -Beta
         if (-not $ContactsWithoutPhoneNumber) {
             $allContacts = $allContacts | Where-Object { $_.businessPhones -or $_.mobilePhone }
@@ -28,6 +29,7 @@ function Get-GALContacts {
                     })
             }
         }
+        Write-VerboseEvent "$($returnObject.count) contacts found"
         return $returnObject
     }
     catch {

@@ -1,9 +1,5 @@
-<#
-TODO:
-- Sync contacts (logic in the module)
-#>
-
 param (
+    [CmdletBinding()]
     [parameter(Mandatory)][System.IO.FileInfo]$CredentialPath,
     [parameter(Mandatory)][string]$Tenant,
     [parameter(Mandatory)][string]$ContactFolderName,
@@ -19,7 +15,7 @@ if ($LogPath) {
     Start-Transcript -OutputDirectory $LogPath
 }
 
-Import-Module .\Module\GAL-Sync.psm1 -Verbose -Force
+Import-Module .\Module\GAL-Sync.psm1 -Force
 Connect-GALSync -CredentialFile $CredentialPath -Tenant $Tenant
 
 # Get users based on input
@@ -35,6 +31,7 @@ foreach ($mailBox in $mailBoxesToSync) {
         Sync-GALContacts -Mailbox $mailBox -ContactList $GALContacts -ContactFolderName $ContactFolderName
     }
     catch {
+        Write-LogEvent -Level Error -Message $_.Exception.Message
         Write-LogEvent -Level Error -Message "Failed to sync mailbox: $($mailBox)"
     }
 }
