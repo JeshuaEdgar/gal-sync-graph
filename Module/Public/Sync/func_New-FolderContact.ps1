@@ -9,7 +9,7 @@ function New-FolderContact {
         surname        = $contact.surname
         mobilePhone    = $contact.mobilePhone
         jobTitle       = $contact.jobTitle
-        department     = $conact.department
+        department     = $contact.department
         emailAddresses = $contact.emailAddresses
     }
     # add these based on pressence

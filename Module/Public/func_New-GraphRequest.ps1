@@ -65,12 +65,7 @@ function New-GraphRequest {
                 (-not $request.'@odata.nextLink')
             )
         }
-        if ($request.PsObject.Members.Name | Where-Object { $_ -eq "value" } ) {
-            return $request.value
-        }
-        else {
-            return $request 
-        }
+        return $output 
     }
     catch {
         throw (Format-ErrorCode $_).ErrorMessage

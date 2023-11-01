@@ -2,15 +2,17 @@ function Get-ContactFolder {
     param (
         [CmdletBinding()]
         [parameter(Mandatory)][string]$Mailbox,
-        [parameter(Mandatory)][string]$ContactFolderName
+        [string]$ContactFolderName
     )
-    $contactsFolder = "Contacts"
     try {
         Write-VerboseEvent "Getting folder $ContactFolderName"
-        $folderList = New-GraphRequest -Method Get -Endpoint ("/users/$($Mailbox)/contactFolders?`$filter=displayName eq '{0}'" -f $ContactFolderName) -Beta
-        if ($ContactFolderName -like $contactsFolder) {
+        $folderList = New-GraphRequest -Method Get -Endpoint "/users/$($Mailbox)/contactFolders?`$top=999" -Beta
+        if (-not $ContactFolderName) {
             Write-VerboseEvent "Default contacts folder is querried"
             $folderList = $folderList | Where-Object { $_.wellKnownName }
+        }
+        else { # if ContactFolderName is not filled in
+            $folderList = $folderList | Where-Object { $_.displayName -like $ContactFolderName }
         }
         if (-not $folderList) {
             Write-VerboseEvent "Not able to find the contact folder $ContactFolderName for $Mailbox"

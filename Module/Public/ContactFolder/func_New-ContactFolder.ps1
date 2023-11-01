@@ -6,7 +6,7 @@ function New-ContactFolder {
     )
     try {
         Write-VerboseEvent "Getting parent ID"
-        $folderParentID = Get-ContactFolder -Mailbox $Mailbox -ContactFolderName "Contacts" | Select-Object -ExpandProperty id
+        $folderParentID = Get-ContactFolder -Mailbox $Mailbox | Select-Object -ExpandProperty id
         Write-VerboseEvent "Parent ID: $folderParentID"
         $contactFolderBody = @{
             displayName    = $ContactFolderName

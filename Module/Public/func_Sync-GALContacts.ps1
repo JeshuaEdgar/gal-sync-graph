@@ -26,7 +26,7 @@ function Sync-GALContacts {
 
     # get contacts in that folder
     try {
-        $contactsInFolder = Get-FolderContact -ContactFolder $contactFolder 
+        $contactsInFolder = Get-FolderContact -ContactFolder $contactFolder
     }
     catch {
         throw "Failed to create contact folder $($ContactFolderName) in mailbox $($Mailbox)"
@@ -38,48 +38,92 @@ function Sync-GALContacts {
     }
     else {
         $newContacts = $ContactList | Where-Object { $_.displayName -notin $contactsInFolder.displayName }
-        $comparisson = Compare-Object -ReferenceObject ($contactsInFolder | Select-Object -ExcludeProperty id) -DifferenceObject ($ContactList | Where-Object { $_.displayName -in $contactsInFolder.displayName }) 
-        $removeContacts = $comparisson | Where-Object { $_.SideIndicator -eq "<=" }
-        $updateContacts = $comparisson | Where-Object { $_.SideIndicator -eq "=>" }
+        $removeContacts = $contactsInFolder | Where-Object { $_.displayName -notin $ContactList.displayName }
+
+        function Check-Contact {
+            [CmdletBinding()]
+            param (
+                $ContactInFolder,
+                $Contact
+            )
+            # loop over the properties in each contact
+            foreach ($property in $ContactInFolder.PSObject.Properties) {
+                $name = $property.name
+                $contactListValue = $contact.$name
+                $folderContactValue = $property.value
+                
+                if ($name -ne "id") {
+                    Write-Verbose "Checking $name"
+                    if ($folderContactValue -is [array] -and $name -ne "businessPhones") {
+                        $difference = Compare-Object $contactListValue $folderContactValue
+                        if ($null -ne $difference) {
+                            Write-Verbose "$name is different"
+                            $returnContact = $contact
+                        }
+                    }
+                    elseif ($contactListValue -ne $folderContactValue) {
+                        Write-Verbose "$name is different"
+                        $returnContact = $contact
+                    }
+                }
+            }
+            if ($null -ne $returnContact) {
+                $returnContact | Add-Member -MemberType NoteProperty -Name "id" -Value $ContactInFolder.id -Force
+                return $returnContact
+            }
+            else {
+                return $null
+            }
+        }
+
+        # foreach loop over the contactlist to compare to contacts in folder
+        $updateContacts = @()
+        foreach ($contact in $ContactList) {
+            # find matching contact
+            $folderContact = $contactsInFolder | Where-Object { $_.displayName -eq $contact.displayname }
+            if ($folderContact) {
+                $checkedContact = Check-Contact -ContactInFolder $folderContact -Contact $contact
+                if ($checkedContact) { $updateContacts += $checkedContact }
+            }
+        }
     }
 
-    # determine which contacts to update/remove/add
     if ($removeContacts) {
-        $removeContacts | ForEach-Object { 
+        foreach ($contact in $removeContacts) {
             try { 
-                Remove-FolderContact -Contact $_ -ContactFolder $contactFolder | Out-Null
-                Write-LogEvent -Level Info -Message "Removed contact $($_.displayName)"
+                Remove-FolderContact -Contact $contact -ContactFolder $contactFolder | Out-Null
+                Write-LogEvent -Level Info -Message "Removed contact $($contact.displayName)"
             }
             catch {
-                Write-LogEvent -Level Error -Message "Failed to remove contact $($_.displayName)"
+                Write-LogEvent -Level Error -Message "Failed to remove contact $($contact.displayName)"
             }
         }
     }
 
     elseif ($updateContacts) {
-        $updateContacts | ForEach-Object { 
+        foreach ($contact in $updateContacts) { 
             try { 
-                Update-FolderContact -Contact $_ -ContactFolder $contactFolder | Out-Null
-                Write-LogEvent -Level Info -Message "Updated contact $($_.displayName)"
+                Update-FolderContact -Contact $contact -ContactFolder $contactFolder | Out-Null
+                Write-LogEvent -Level Info -Message "Updated contact $($contact.displayName)"
             }
             catch {
-                Write-LogEvent -Level Error -Message "Failed to update contact $($_.displayName)"
+                Write-LogEvent -Level Error -Message "Failed to update contact $($updatedContact.displayName)"
             }
         }
     }
 
     elseif ($newContacts) {
-        $newContacts | ForEach-Object { 
+        foreach ($contact in $newContacts) { 
             try { 
-                New-FolderContact -Contact $_ -ContactFolder $contactFolder | Out-Null
-                Write-LogEvent -Level Info -Message "Created contact $($_.displayName)"
+                New-FolderContact -Contact $contact -ContactFolder $contactFolder | Out-Null
+                Write-LogEvent -Level Info -Message "Created contact $($contact.displayName)"
             }
             catch {
-                Write-LogEvent -Level Error -Message "Failed to create contact $($_.displayName)"
+                Write-LogEvent -Level Error -Message "Failed to create contact $($contact.displayName)"
             }
         }
     }
     else {
-        Write-LogEvent -Level Info -Message "No new contacts available to sync"
+        Write-LogEvent -Level Info -Message "No contacts available to sync"
     }
 }

@@ -23,7 +23,7 @@ function Get-FolderContact {
                     surname        = $_.surname
                     jobTitle       = $_.jobTitle                
                     department     = $_.department
-                    homePhones     = $_.homePhones
+                    # homePhones     = [array]$_.homePhones
                     emailAddresses = $_.emailAddresses
                     id             = $_.id
                 }

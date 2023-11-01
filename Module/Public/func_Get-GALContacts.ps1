@@ -6,7 +6,7 @@ function Get-GALContacts {
     )
     try {
         Write-VerboseEvent "Getting GAL contacts"
-        $allContacts = New-GraphRequest -Endpoint "/users?`$select=*" -Beta
+        $allContacts = New-GraphRequest -Endpoint "/users?`$select=*&`$top=999" -Beta
         if (-not $ContactsWithoutPhoneNumber) {
             $allContacts = $allContacts | Where-Object { $_.businessPhones -or $_.mobilePhone }
         }
@@ -22,7 +22,7 @@ function Get-GALContacts {
                 surname        = $_.surname
                 jobTitle       = $_.jobTitle                
                 department     = $_.department
-                homePhones     = $_.homePhones
+                # homePhones     = if (-not $_.homePhones) { @() } else { @($_.homePhones) }
                 emailAddresses = @([pscustomobject]@{
                         name    = $_.displayName
                         address = $_.mail 
