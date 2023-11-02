@@ -32,10 +32,13 @@ Describe "gal-sync-graph" {
             New-ContactFolder -Mailbox $env:mailBox -ContactFolderName $env:contactFolderName | Select-Object -ExpandProperty displayName | Should -Be $env:contactFolderName
         }
         It "Should return contacts folder" {
-            Get-ContactFolder -Mailbox $env:mailBox -ContactFolderName "Contacts" | Select-Object -ExpandProperty displayName | Should -Be "Contacts"
+            Get-ContactFolder -Mailbox $env:mailBox -ContactFolderName $env:contactFolderName | Select-Object -ExpandProperty displayName | Should -Be $env:contactFolderName
         }
     }
     Context "Contacts" {
+        BeforeAll {
+            Start-Sleep 1
+        }
         It "Should create a contact in the folder" {
             $contactFolder = Get-ContactFolder -Mailbox $env:mailBox -ContactFolderName $env:contactFolderName
             $galContact = (Get-GALContacts)[$env:randomInt]
@@ -48,9 +51,8 @@ Describe "gal-sync-graph" {
         }
         It "Should update the newly created contact" {
             $contactFolder = Get-ContactFolder -Mailbox $env:mailBox -ContactFolderName $env:contactFolderName
-            $newContact = (Get-GALContacts)[$env:randomUpdInt]
-            $oldContact = Get-FolderContact -ContactFolder $contactFolder 
-            Update-FolderContact -ContactFolder $contactFolder -OldContact $oldContact -NewContact $newContact | Should -BeTrue
+            $Contact = Get-FolderContact -ContactFolder $contactFolder 
+            Update-FolderContact -ContactFolder $contactFolder -Contact $Contact | Should -BeTrue
         }
         It "Should delete the newly created contact" {
             $contactFolder = Get-ContactFolder -Mailbox $env:mailBox -ContactFolderName $env:contactFolderName
