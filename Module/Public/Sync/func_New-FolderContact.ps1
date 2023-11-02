@@ -1,3 +1,5 @@
+Import-Module Microsoft.Graph.PersonalContacts
+
 function New-FolderContact {
     [cmdletbinding()]
     param (
@@ -16,8 +18,9 @@ function New-FolderContact {
     if ($contact.homePhones) { $contactBody.homePhones = $contact.homePhones }
     if ($contact.businessPhones) { $contactBody.businessPhones = $contact.businessPhones }
 
-    try { 
-        New-GraphRequest -Method Post -Endpoint "/users/$($ContactFolder.mailBox)/contactFolders/$($ContactFolder.id)/contacts" -Body $contactBody | Out-Null
+    try {
+        New-MgUserContactFolderContact -UserId $ContactFolder.mailBox -ContactFolderId $ContactFolder.id -BodyParameter $contactBody
+        $encodedBody = [System.Text.Encoding]::UTF8.GetBytes($contactBody)
         Write-VerboseEvent "Created contact $($Contact.displayName)"
         return $true
     }

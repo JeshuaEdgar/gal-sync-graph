@@ -2,28 +2,30 @@ function Get-GALAADGroupMembers {
     param (
         [CmdletBinding()]
         [Parameter(Mandatory)]
-        [string]$Name
+        [string]$GroupName
     )
     try {
         $userList = @()
-        Write-VerboseEvent "Getting AD members for $Name"
-        $groupList = New-GraphRequest -Endpoint ("/groups?`$filter=startswith(displayName, '{0}')" -f $Name)
+        Write-VerboseEvent "Getting AD members for group $GroupName"
+        $groupList = Get-MgGroup -Filter "DisplayName eq '$($GroupName)'"
         if ($groupList) {
             do {
                 foreach ($group in $groupList) {
-                    $users = New-GraphRequest -Method Get -Endpoint "/groups/$($group.id)/members"
-                    $userList += $users | Where-Object { $_."@odata.type" -eq "#microsoft.graph.user" }
-                    $groups = $users | Where-Object { $_."@odata.type" -eq "#microsoft.graph.group" }
+                    $users = Get-MgGroupMember -GroupId $group.id -All
+                    $userList = $users
+                    #$userList += $users | Where-Object { $_."@odata.type" -eq "#microsoft.graph.user" }
+                    #$groups = $users | Where-Object { $_."@odata.type" -eq "#microsoft.graph.group" }
                 }
-                $groupList = $groups
+                #$groupList = $groups
             } until (
-                ($users | Where-Object { $_."@odata.type" -eq "#microsoft.graph.group" }).count -eq 0
+                #($users | Where-Object { $_."@odata.type" -eq "#microsoft.graph.group" }).count -eq 0
+                return false
             )
-            Write-VerboseEvent "Found users in $Name"
+            Write-VerboseEvent "Found users in $GroupName"
             return $userList
         }
         else {
-            Write-Warning "No users found in $Name"
+            Write-Warning "No users found in $GroupName"
         }
     }
     catch {

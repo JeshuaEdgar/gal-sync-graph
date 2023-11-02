@@ -1,3 +1,5 @@
+Import-Module Microsoft.Graph.Users
+
 function Get-GALContacts {
     [CmdletBinding()]
     param (
@@ -6,7 +8,7 @@ function Get-GALContacts {
     )
     try {
         Write-VerboseEvent "Getting GAL contacts"
-        $allContacts = New-GraphRequest -Endpoint "/users?`$select=*" -Beta
+        $allContacts = Get-MgUser -All
         if (-not $ContactsWithoutPhoneNumber) {
             $allContacts = $allContacts | Where-Object { $_.businessPhones -or $_.mobilePhone }
         }

@@ -1,3 +1,5 @@
+Import-Module Microsoft.Graph.PersonalContacts
+
 function Get-FolderContact {
     [cmdletbinding()]
     param (
@@ -5,7 +7,7 @@ function Get-FolderContact {
         [string]$DisplayName
     )
     try {
-        $contactList = New-GraphRequest -Method Get -Endpoint "/users/$($ContactFolder.mailBox)/contactfolders/$($contactFolder.id)/contacts?`$top=999"
+        $contactList = Get-MgUserContactFolderContact -UserId $ContactFolder.mailBox -ContactFolderId $contactFolder.id -All
         if (-not $contactList) {
             Write-VerboseEvent "Not able to find contacts in folder"
             return

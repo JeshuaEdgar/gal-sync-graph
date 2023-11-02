@@ -1,3 +1,5 @@
+Import-Module Microsoft.Graph.PersonalContacts
+
 function Get-ContactFolder {
     param (
         [CmdletBinding()]
@@ -7,7 +9,7 @@ function Get-ContactFolder {
     $contactsFolder = "Contacts"
     try {
         Write-VerboseEvent "Getting folder $ContactFolderName"
-        $folderList = New-GraphRequest -Method Get -Endpoint ("/users/$($Mailbox)/contactFolders?`$filter=displayName eq '{0}'" -f $ContactFolderName) -Beta
+        $folderList = Get-MgUserContactFolder -UserId $Mailbox -Filter "displayName eq '$ContactFolderName'"
         if ($ContactFolderName -like $contactsFolder) {
             Write-VerboseEvent "Default contacts folder is querried"
             $folderList = $folderList | Where-Object { $_.wellKnownName }

@@ -1,3 +1,5 @@
+Import-Module Microsoft.Graph.PersonalContacts
+
 function Remove-FolderContact {
     [CmdletBinding()]
     param (
@@ -7,7 +9,7 @@ function Remove-FolderContact {
     process {
         foreach ($contactItem in $Contact) {
             try {
-                New-GraphRequest -Method Delete -Endpoint "/users/$($ContactFolder.mailBox)/contactFolders/$($ContactFolder.id)/contacts/$($contactItem.id)" | Out-Null
+                Remove-MgUserContactFolderContact -UserId $ContactFolder.mailBox -ContactFolderId $ContactFolder.id -ContactId $contactItem.id
                 Write-VerboseEvent "Deleted contact $($contactItem.displayName)"
                 return $true
             }

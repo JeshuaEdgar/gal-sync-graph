@@ -15,16 +15,39 @@ if ($LogPath) {
     Start-Transcript -OutputDirectory $LogPath
 }
 
+function Decrypt-AppSecret {
+    param (
+        [pscredential]$Credential
+    )
+    # Decrypt ApplicationSecret for getting a token
+    try {
+        $encrypted_data = ConvertFrom-SecureString $credential.Password
+        $password_securestring = ConvertTo-SecureString $encrypted_data
+        return [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($password_securestring))
+    }
+    catch {
+        throw $_.Exception.Message
+    }
+}
+
+$credentialObject = Import-Clixml -Path $CredentialPath
+$clientSecret = Decrypt-AppSecret $credentialObject
+
+Connect-MgGraph -TenantId $Tenant -ClientSecretCredential $credentialObject
+
 Import-Module .\Module\GAL-Sync.psm1 -Force
-Connect-GALSync -CredentialFile $CredentialPath -Tenant $Tenant
 
 # Get users based on input
 if ($Directory) { $mailBoxesToSync = (Get-GALContacts -ContactsWithoutPhoneNumber $true).emailaddresses | Select-Object -ExpandProperty address }
-elseif ($AzureADGroup) { $mailBoxesToSync = Get-GALAADGroupMembers -Name $AzureADGroup | Select-Object -ExpandProperty mail }
+elseif ($AzureADGroup) { $mailBoxesToSync = Get-GALAADGroupMembers -GroupName $AzureADGroup | Select-Object -ExpandProperty mail }
 elseif ($MailboxList -is [array]) { $mailBoxesToSync = $MailboxList }
 else { Write-Error "No valid mailbox input"; Read-Host; exit 1 }
 
+
+Write-VerboseEvent "Mailboxes to sync: $mailBoxesToSync"
+
 $GALContacts = Get-GALContacts -ContactsWithoutPhoneNumber $ContactsWithoutPhoneNumber -ContactsWithoutEmail $ContactsWithoutEmail
+
 
 foreach ($mailBox in $mailBoxesToSync) {
     try {

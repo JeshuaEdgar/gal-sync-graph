@@ -13,7 +13,7 @@ function Sync-GALContacts {
         if ($contactFolder) { Write-LogEvent -Level Info -Message "Found folder $($ContactFolderName) for $($Mailbox)" }
         else {
             try {
-                $contactFolder = New-ContactFolder -Mailbox $Mailbox -ContactFolderName $ContactFolderName 
+                $contactFolder = New-ContactFolder -Mailbox $Mailbox -ContactFolderName $ContactFolderName
                 Write-LogEvent -Level Info -Message "Created folder $($ContactFolderName) for $($Mailbox)"
             }
             catch { throw "Something went wrong creating the contact folder" }
@@ -37,15 +37,16 @@ function Sync-GALContacts {
         $newContacts = $ContactList
     }
     else {
+        exit
         $newContacts = $ContactList | Where-Object { $_.displayName -notin $contactsInFolder.displayName }
-        $comparisson = Compare-Object -ReferenceObject ($contactsInFolder | Select-Object -ExcludeProperty id) -DifferenceObject ($ContactList | Where-Object { $_.displayName -in $contactsInFolder.displayName }) 
+        $comparisson = Compare-Object -ReferenceObject $contactsInFolder -DifferenceObject ($ContactList | Where-Object { $_.displayName -in $contactsInFolder.displayName }) 
         $removeContacts = $comparisson | Where-Object { $_.SideIndicator -eq "<=" }
         $updateContacts = $comparisson | Where-Object { $_.SideIndicator -eq "=>" }
     }
 
     # determine which contacts to update/remove/add
     if ($removeContacts) {
-        $removeContacts | ForEach-Object { 
+        $removeContacts.InputObject | ForEach-Object {
             try { 
                 Remove-FolderContact -Contact $_ -ContactFolder $contactFolder | Out-Null
                 Write-LogEvent -Level Info -Message "Removed contact $($_.displayName)"
