@@ -59,3 +59,8 @@ Ever wondered who called you from your organisation on your iPhone/Android devic
   - [Create contact folder](https://learn.microsoft.com/en-us/graph/api/user-post-contactfolders)
   - [Create contact](https://learn.microsoft.com/en-us/graph/api/user-post-contacts)
   - [Update contact](https://learn.microsoft.com/en-us/graph/api/contact-update)
+
+## Credits
+
+- [@jussihi](https://github.com/jussihi)
+  - Creating some of the modules present for the sync

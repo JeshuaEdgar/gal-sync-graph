@@ -1,3 +1,10 @@
+# [v0.1.1-beta]
+
+## Added
+
+- `Delete-ContactFolder`
+  - Courtesy of [@jussihi](https://github.com/jussihi) mentioned in #3 and #5, thanks!
+
 # [v0.1.0-beta]
 
 ## Known Issues
@@ -17,7 +24,6 @@
 - `Update-FolderContact` now works properly
 - `Department` property was missing from the new contacts
 - `Sync-GALContacts`'s delta sync now works properly
-
 
 # [v0.0.3-beta]
 
