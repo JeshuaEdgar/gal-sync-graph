@@ -6,7 +6,11 @@ function Delete-ContactFolder {
     )
     try {
         Write-VerboseEvent "Deleting ContactFolder $($ContactFolder.displayName) (ID: $($ContactFolder.id))"
-        New-GraphRequest -Method Delete -Endpoint "/users/$($Mailbox)/contactFolders/$($ContactFolder.id)"
+        if ($UseGraphSDK) {
+            Remove-MgUserContactFolder -UserId $Mailbox -ContactFolderId $ContactFolder.id
+        } else {
+            New-GraphRequest -Method Delete -Endpoint "/users/$($Mailbox)/contactFolders/$($ContactFolder.id)"
+        }
         return
     }
     catch {

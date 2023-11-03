@@ -6,7 +6,11 @@ function Get-ContactFolder {
     )
     try {
         Write-VerboseEvent "Getting folder $ContactFolderName"
-        $folderList = New-GraphRequest -Method Get -Endpoint "/users/$($Mailbox)/contactFolders?`$top=999" -Beta
+        $folderList = if ($UseGraphSDK) {
+            Get-MgUserContactFolder -UserId $Mailbox -Filter "displayName eq '$ContactFolderName'"
+        } else {
+            New-GraphRequest -Method Get -Endpoint "/users/$($Mailbox)/contactFolders?`$top=999" -Beta
+        }
         if (-not $ContactFolderName) {
             Write-VerboseEvent "Default contacts folder is querried"
             $folderList = $folderList | Where-Object { $_.wellKnownName }
