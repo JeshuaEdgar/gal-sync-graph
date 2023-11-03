@@ -53,13 +53,13 @@ function New-GraphRequest {
             return $output
         }
         $output = @()
-        $request = Invoke-RestMethod @reqSplat
+        $request = Invoke-RestMethod -ContentType "application/json; charset=UTF-8" @reqSplat
         $output += (Check-OutputData $request)
         if ($request.'@odata.nextLink') {
             Write-VerboseEvent "Found @odata.nextLink"
             Write-VerboseEvent $request.'@odata.nextLink'
             do {
-                $request = Invoke-RestMethod $request.'@odata.nextLink' -Headers $script:galSyncData.GraphAuthHeader
+                $request = Invoke-RestMethod -ContentType "application/json; charset=UTF-8" $request.'@odata.nextLink' -Headers $script:galSyncData.GraphAuthHeader
                 $output += (Check-OutputData $request)
             } until (
                 (-not $request.'@odata.nextLink')
