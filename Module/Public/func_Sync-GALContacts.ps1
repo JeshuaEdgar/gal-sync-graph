@@ -32,59 +32,52 @@ function Sync-GALContacts {
         throw "Failed to create contact folder $($ContactFolderName) in mailbox $($Mailbox)"
     }
 
-    # compare lists of new contacts vs old.
-    if (-not $contactsInFolder) {
-        $newContacts = $ContactList
-    }
-    else {
-        $newContacts = $ContactList | Where-Object { $_.displayName -notin $contactsInFolder.displayName }
-        $removeContacts = $contactsInFolder | Where-Object { $_.displayName -notin $ContactList.displayName }
+    $removeContacts = $contactsInFolder | Where-Object { $_.displayName -notin $ContactList.displayName }
 
-        function Check-Contact {
-            [CmdletBinding()]
-            param (
-                $ContactInFolder,
-                $Contact
-            )
-            # loop over the properties in each contact
-            foreach ($property in $ContactInFolder.PSObject.Properties) {
-                $name = $property.name
-                $contactListValue = $contact.$name
-                $folderContactValue = $property.value
-                
-                if ($name -ne "id") {
-                    Write-Verbose "Checking $name"
-                    if ($folderContactValue -is [array] -and $name -ne "businessPhones") {
-                        $difference = Compare-Object $contactListValue $folderContactValue
-                        if ($null -ne $difference) {
-                            Write-Verbose "$name is different"
-                            $returnContact = $contact
-                        }
-                    }
-                    elseif ($contactListValue -ne $folderContactValue) {
+    function Check-Contact {
+        [CmdletBinding()]
+        param (
+            $ContactInFolder,
+            $Contact
+        )
+        # loop over the properties in each contact
+        foreach ($property in $ContactInFolder.PSObject.Properties) {
+            $name = $property.name
+            $contactListValue = $contact.$name
+            $folderContactValue = $property.value
+
+            if ($name -ne "id") {
+                Write-Verbose "Checking $name"
+                if ($folderContactValue -is [array] -and $name -ne "businessPhones") {
+                    $difference = Compare-Object $contactListValue $folderContactValue
+                    if ($null -ne $difference) {
                         Write-Verbose "$name is different"
                         $returnContact = $contact
                     }
                 }
-            }
-            if ($null -ne $returnContact) {
-                $returnContact | Add-Member -MemberType NoteProperty -Name "id" -Value $ContactInFolder.id -Force
-                return $returnContact
-            }
-            else {
-                return $null
+                elseif ($contactListValue -ne $folderContactValue) {
+                    Write-Verbose "$name is different"
+                    $returnContact = $contact
+                }
             }
         }
+        if ($null -ne $returnContact) {
+            $returnContact | Add-Member -MemberType NoteProperty -Name "id" -Value $ContactInFolder.id -Force
+            return $returnContact
+        }
+        else {
+            return $null
+        }
+    }
 
-        # foreach loop over the contactlist to compare to contacts in folder
-        $updateContacts = @()
-        foreach ($contact in $ContactList) {
-            # find matching contact
-            $folderContact = $contactsInFolder | Where-Object { $_.displayName -eq $contact.displayname }
-            if ($folderContact) {
-                $checkedContact = Check-Contact -ContactInFolder $folderContact -Contact $contact
-                if ($checkedContact) { $updateContacts += $checkedContact }
-            }
+    # foreach loop over the contactlist to compare to contacts in folder
+    $updateContacts = @()
+    foreach ($contact in $ContactList) {
+        # find matching contact
+        $folderContact = $contactsInFolder | Where-Object { $_.displayName -eq $contact.displayname }
+        if ($folderContact) {
+            $checkedContact = Check-Contact -ContactInFolder $folderContact -Contact $contact
+            if ($checkedContact) { $updateContacts += $checkedContact }
         }
     }
 
@@ -100,7 +93,7 @@ function Sync-GALContacts {
         }
     }
 
-    elseif ($updateContacts) {
+    if ($updateContacts) {
         foreach ($contact in $updateContacts) { 
             try { 
                 Update-FolderContact -Contact $contact -ContactFolder $contactFolder | Out-Null
@@ -112,7 +105,23 @@ function Sync-GALContacts {
         }
     }
 
-    elseif ($newContacts) {
+    # Get contacts in that folder again (after we've possibly modified some of them)
+    try {
+        $contactsInFolder = Get-FolderContact -ContactFolder $contactFolder
+    }
+    catch {
+        throw "Failed to create contact folder $($ContactFolderName) in mailbox $($Mailbox)"
+    }
+
+    # compare lists of new contacts vs old.
+    if (-not $contactsInFolder) {
+        $newContacts = $ContactList
+    }
+    else {
+        $newContacts = $ContactList | Where-Object { $_.displayName -notin $contactsInFolder.displayName }
+    }
+
+    if ($newContacts) {
         foreach ($contact in $newContacts) { 
             try { 
                 New-FolderContact -Contact $contact -ContactFolder $contactFolder | Out-Null
@@ -123,7 +132,7 @@ function Sync-GALContacts {
             }
         }
     }
-    else {
+    if (-not $newContacts -and -not $updateContacts -and -not $removeContacts) {
         Write-LogEvent -Level Info -Message "No contacts available to sync"
     }
 }
