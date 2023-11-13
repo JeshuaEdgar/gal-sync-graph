@@ -6,5 +6,5 @@ PowerShell.exe -ExecutionPolicy Bypass ^
 -Tenant "tenant.onmicrosoft.com" ^
 -ContactFolderName "Global Address List" ^
 -LogPath "%CD%\Logs" ^
--AzureADGroup "SG_GALSyncUsers" ^
+-AzureADGroup "SG_GALSyncUsers"
 pause
