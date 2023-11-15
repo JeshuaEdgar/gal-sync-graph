@@ -40,8 +40,27 @@ function Connect-GALSync {
         $clientSecret = Decrypt-AppSecret $Credential
     }
 
+    $necesaryAppRoles = @("Group.Read.All", "Contacts.ReadWrite", "User.Read.All", "OrgContact.Read.All")
+    function Check-Permissions {
+        [CmdletBinding()]
+        param (
+            $AppScopes
+        )
+        $comparisson = Compare-Object $necesaryAppRoles $AppScopes
+        if (-not ($comparisson | Where-Object { $_.SideIndicator -eq "<=" })) {
+            Write-VerboseEvent "Permissions are OK!"
+        }
+        else {
+            throw "Missing the $(($comparisson | Where-Object {$_.SideIndicator -eq "=>"}).InputObject -join ", ") role(s), please update your application and rerun the script"
+        }
+    }
 
-    $necesaryAppRoles = @("Group.Read.All", "Contacts.ReadWrite", "User.Read.All")
+    if ($UseGraphSDK) {
+        Connect-MgGraph -TenantId $Tenant -ClientSecretCredential $credentialObject
+        $ctx = Get-MgContext
+        Check-Permissions -AppScopes $ctx.Scopes
+        return $true
+    }
 
     try {
         # Make body
@@ -61,13 +80,7 @@ function Connect-GALSync {
         $tokenByteArray = [System.Convert]::FromBase64String($tokenPayload)
         $applicationRoles = [System.Text.Encoding]::ASCII.GetString($tokenByteArray) | ConvertFrom-Json | Select-Object -ExpandProperty roles
 
-        $comparisson = Compare-Object $necesaryAppRoles $applicationRoles
-        if (-not ($comparisson | Where-Object { $_.SideIndicator -eq "<=" })) {
-            Write-VerboseEvent "Permissions are OK!"
-        }
-        else {
-            throw "Missing the $(($comparisson | Where-Object {$_.SideIndicator -eq "=>"}).InputObject -join ", ") role(s), please update your application and rerun the script"
-        }
+        Check-Permissions -AppScopes $applicationRoles
         
         # Set token
         $script:galSyncData.Tenant = $Tenant

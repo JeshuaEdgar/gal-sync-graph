@@ -7,7 +7,11 @@ function Remove-FolderContact {
     process {
         foreach ($contactItem in $Contact) {
             try {
-                New-GraphRequest -Method Delete -Endpoint "/users/$($ContactFolder.mailBox)/contactFolders/$($ContactFolder.id)/contacts/$($contactItem.id)" | Out-Null
+                if ($UseGraphSDK) {
+                    Remove-MgUserContactFolderContact -UserId $ContactFolder.mailBox -ContactFolderId $ContactFolder.id -ContactId $contactItem.id
+                } else {
+                    New-GraphRequest -Method Delete -Endpoint "/users/$($ContactFolder.mailBox)/contactFolders/$($ContactFolder.id)/contacts/$($contactItem.id)" | Out-Null
+                }
                 Write-VerboseEvent "Deleted contact $($contactItem.displayName)"
                 return $true
             }

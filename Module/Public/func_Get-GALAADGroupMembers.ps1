@@ -7,13 +7,23 @@ function Get-GALAADGroupMembers {
     try {
         $userList = @()
         Write-VerboseEvent "Getting AD members for $Name"
-        $groupList = New-GraphRequest -Endpoint ("/groups?`$filter=startswith(displayName, '{0}')" -f $Name)
+
+        $groupList = if ($UseGraphSDK) {
+            Get-MgGroup -Filter "DisplayName eq '$($GroupName)'"
+        } else {
+            New-GraphRequest -Endpoint ("/groups?`$filter=startswith(displayName, '{0}')" -f $Name)
+        }
         if ($groupList) {
             do {
                 foreach ($group in $groupList) {
-                    $users = New-GraphRequest -Method Get -Endpoint "/groups/$($group.id)/members"
-                    $userList += $users | Where-Object { $_."@odata.type" -eq "#microsoft.graph.user" }
-                    $groups = $users | Where-Object { $_."@odata.type" -eq "#microsoft.graph.group" }
+                    if ($UseGraphSDK) {
+                        $userList += Get-MgGroupMemberAsUser -GroupId $group.id -All
+                        $groups = Get-MgGroupMemberAsGroup -GroupId $group.id -All
+                    } else {
+                        New-GraphRequest -Method Get -Endpoint "/groups/$($group.id)/members"
+                        $userList += $users | Where-Object { $_."@odata.type" -eq "#microsoft.graph.user" }
+                        $groups = $users | Where-Object { $_."@odata.type" -eq "#microsoft.graph.group" }
+                    }
                 }
                 $groupList = $groups
             } until (

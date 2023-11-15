@@ -44,7 +44,8 @@ Ever wondered who called you from your organisation on your iPhone/Android devic
     - Use this option if you want to sync GAL contacts without phone numbers.
   - `-ContactsWithoutEmail`
     - Use this option if you want to sync GAL contacts without email address.
-
+  - `-UseGraphSDK`
+    - Use this option if you want to use GraphSDK instead of raw requests for interactions against the Graph API. This requires `Microsoft.Graph` module in PowerShell. [Click here for GraphSDK installation instructions](https://learn.microsoft.com/en-us/powershell/microsoftgraph/installation).
 ## Azure Application Permissions needed
 
 - User.Read.All

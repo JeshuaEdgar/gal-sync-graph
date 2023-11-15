@@ -15,7 +15,11 @@ function Update-FolderContact {
         # add these based on pressence
         # if ($Contact.homePhones) { $updateContactBody.homePhones = $NewContact.homePhones }
         if ($Contact.businessPhones) { $updateContactBody.businessPhones = $Contact.businessPhones }
-        New-GraphRequest -Method Patch -Endpoint "/users/$($ContactFolder.mailBox)/contactFolders/$($ContactFolder.id)/contacts/$($Contact.id)" -Body $updateContactBody | Out-Null
+        if ($UseGraphSDK) {
+            Update-MgUserContactFolderContact -UserId $ContactFolder.mailBox -ContactFolderId $ContactFolder.id -ContactId $Contact.id -BodyParameter $updateContactBody
+        } else {
+            New-GraphRequest -Method Patch -Endpoint "/users/$($ContactFolder.mailBox)/contactFolders/$($ContactFolder.id)/contacts/$($Contact.id)" -Body $updateContactBody | Out-Null
+        }
         Write-VerboseEvent "Updated contact $($Contact.displayName)"
         return $true
     }

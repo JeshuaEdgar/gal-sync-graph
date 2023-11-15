@@ -8,12 +8,18 @@ param (
     [switch]$Directory,
     [string]$LogPath,
     [switch]$ContactsWithoutPhoneNumber,
-    [switch]$ContactsWithoutEmail
+    [switch]$ContactsWithoutEmail,
+    [switch]$UseGraphSDK
 )
+
+Set-Variable -Name UseGraphSDK -Value $UseGraphSDK -Scope Global -Option ReadOnly
 
 if ($LogPath) {
     Start-Transcript -OutputDirectory $LogPath
 }
+
+Write-Verbose "Using $(If ($UseGraphSDK) {"Graph SDK"} Else {"raw REST requests"}) for connection"
+If ($UseGraphSDK) { Import-Module Microsoft.Graph.PersonalContacts }
 
 Import-Module .\Module\GAL-Sync.psm1 -Force
 Connect-GALSync -CredentialFile $CredentialPath -Tenant $Tenant

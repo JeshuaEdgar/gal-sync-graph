@@ -5,7 +5,11 @@ function Get-FolderContact {
         [string]$DisplayName
     )
     try {
-        $contactList = New-GraphRequest -Method Get -Endpoint "/users/$($ContactFolder.mailBox)/contactfolders/$($contactFolder.id)/contacts?`$top=999"
+        $contactList = if ($UseGraphSDK) {
+            Get-MgUserContactFolderContact -UserId $ContactFolder.mailBox -ContactFolderId $contactFolder.id -All
+        } else {
+            New-GraphRequest -Method Get -Endpoint "/users/$($ContactFolder.mailBox)/contactfolders/$($contactFolder.id)/contacts?`$top=999"
+        }
         if (-not $contactList) {
             Write-VerboseEvent "Not able to find contacts in folder"
             return
