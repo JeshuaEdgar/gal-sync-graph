@@ -9,8 +9,25 @@ param (
     [string]$LogPath,
     [switch]$ContactsWithoutPhoneNumber,
     [switch]$ContactsWithoutEmail,
-    [switch]$UseGraphSDK
+    [string]$ContactsFilter,
+    [switch]$UseGraphSDK,
+    [string]$ConfigFile
 )
+
+if ($ConfigFile) {
+    $ConfObj = Get-Content -Raw -Path $ConfigFile | ConvertFrom-Json
+    If ($null -ne $ConfObj.CredentialPath) { $CredentialPath = $ConfObj.CredentialPath }
+    If ($null -ne $ConfObj.Tenant) { $Tenant = $ConfObj.Tenant }
+    If ($null -ne $ConfObj.ContactFolderName) { $ContactFolderName = $ConfObj.ContactFolderName }
+    If ($null -ne $ConfObj.AzureADGroup) { $AzureADGroup = $ConfObj.AzureADGroup }
+    If ($null -ne $ConfObj.MailboxList) { $MailboxList = $ConfObj.MailboxList }
+    If ($null -ne $ConfObj.Directory) { $Directory = $ConfObj.Directory }
+    If ($null -ne $ConfObj.LogPath) { $LogPath = $ConfObj.LogPath }
+    If ($null -ne $ConfObj.ContactsWithoutPhoneNumber) { $ContactsWithoutPhoneNumber = $ConfObj.ContactsWithoutPhoneNumber }
+    If ($null -ne $ConfObj.ContactsWithoutEmail) { $ContactsWithoutEmail = $ConfObj.ContactsWithoutEmail }
+    If ($null -ne $ConfObj.ContactsFilter) { $ContactsFilter = $ConfObj.ContactsFilter }
+    If ($null -ne $ConfObj.UseGraphSDK) { $UseGraphSDK = $ConfObj.UseGraphSDK }
+}
 
 Set-Variable -Name UseGraphSDK -Value $UseGraphSDK -Scope Global -Option ReadOnly
 
@@ -30,7 +47,7 @@ elseif ($AzureADGroup) { $mailBoxesToSync = Get-GALAADGroupMembers -Name $AzureA
 elseif ($MailboxList -is [array]) { $mailBoxesToSync = $MailboxList }
 else { Write-Error "No valid mailbox input"; Read-Host; exit 1 }
 
-$GALContacts = Get-GALContacts -ContactsWithoutPhoneNumber $ContactsWithoutPhoneNumber -ContactsWithoutEmail $ContactsWithoutEmail
+$GALContacts = Get-GALContacts -ContactsWithoutPhoneNumber $ContactsWithoutPhoneNumber -ContactsWithoutEmail $ContactsWithoutEmail -ContactsFilter $ContactsFilter
 
 foreach ($mailBox in $mailBoxesToSync) {
     try {
