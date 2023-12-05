@@ -33,11 +33,11 @@ function Sync-GALContacts {
     }
 
     if ($contactsInFolder) {
-        $removeContacts = $contactsInFolder | Where-Object { $_.displayName -notin $ContactList.displayName }
+        $removeContacts = @()
+        $removeContacts += $contactsInFolder | Where-Object { $_.displayName -notin $ContactList.displayName }
         # Remove contacts that have duplicate displayNames. This is the only way to correctly sync
         # contacts when using displayName as the "primary key"
         $removeContacts += $contactsInFolder | Group-Object displayName | Where-Object { $_.Count -gt 1 } | ForEach-Object { $_.Group }
-
         if ($removeContacts) {
             foreach ($contact in $removeContacts) {
                 try { 
@@ -49,7 +49,6 @@ function Sync-GALContacts {
                 }
             }
         }
-
         # Get contacts in that folder again (after we've possibly removed some of them)
         try {
             $contactsInFolder = Get-FolderContact -ContactFolder $contactFolder
