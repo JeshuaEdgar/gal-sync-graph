@@ -5,6 +5,7 @@
     "ContactsWithoutPhoneNumber": true,
     "ContactsWithoutEmail": true,
     "ContactsFilter": "companyName eq 'ACME Corp'",
+    "UsersFilter": "companyName eq 'ACME Corp'",
     "LogPath": ".\\Logs",
     "Verbose": true,
     "MailboxList": "my-email@acme.corp",

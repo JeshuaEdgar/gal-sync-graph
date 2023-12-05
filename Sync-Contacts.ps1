@@ -1,8 +1,8 @@
 param (
     [CmdletBinding()]
-    [parameter(Mandatory)][System.IO.FileInfo]$CredentialPath,
-    [parameter(Mandatory)][string]$Tenant,
-    [parameter(Mandatory)][string]$ContactFolderName,
+    [System.IO.FileInfo]$CredentialPath,
+    [string]$Tenant,
+    [string]$ContactFolderName,
     [string]$AzureADGroup,
     [string[]]$MailboxList,
     [switch]$Directory,
@@ -10,6 +10,7 @@ param (
     [switch]$ContactsWithoutPhoneNumber,
     [switch]$ContactsWithoutEmail,
     [string]$ContactsFilter,
+    [string]$UsersFilter,
     [switch]$UseGraphSDK,
     [string]$ConfigFile
 )
@@ -26,6 +27,7 @@ if ($ConfigFile) {
     If ($null -ne $ConfObj.ContactsWithoutPhoneNumber) { $ContactsWithoutPhoneNumber = $ConfObj.ContactsWithoutPhoneNumber }
     If ($null -ne $ConfObj.ContactsWithoutEmail) { $ContactsWithoutEmail = $ConfObj.ContactsWithoutEmail }
     If ($null -ne $ConfObj.ContactsFilter) { $ContactsFilter = $ConfObj.ContactsFilter }
+    If ($null -ne $ConfObj.UsersFilter) { $UsersFilter = $ConfObj.UsersFilter }
     If ($null -ne $ConfObj.UseGraphSDK) { $UseGraphSDK = $ConfObj.UseGraphSDK }
 }
 
@@ -42,7 +44,7 @@ Import-Module .\Module\GAL-Sync.psm1 -Force
 Connect-GALSync -CredentialFile $CredentialPath -Tenant $Tenant
 
 # Get users based on input
-if ($Directory) { $mailBoxesToSync = (Get-GALContacts -ContactsWithoutPhoneNumber $true).emailaddresses | Select-Object -ExpandProperty address }
+if ($Directory) { $mailBoxesToSync = (Get-GALContacts -ContactsWithoutPhoneNumber $true -ContactsFilter $UsersFilter).emailaddresses | Select-Object -ExpandProperty address }
 elseif ($AzureADGroup) { $mailBoxesToSync = Get-GALAADGroupMembers -Name $AzureADGroup | Select-Object -ExpandProperty mail }
 elseif ($MailboxList -is [array]) { $mailBoxesToSync = $MailboxList }
 else { Write-Error "No valid mailbox input"; Read-Host; exit 1 }
